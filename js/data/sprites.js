@@ -823,6 +823,27 @@ module.exports = function() {
 		}
 	};
 
+	var buildingSprites = [
+		'micro-roof',
+		'micro-building',
+		'micro-sidewalk',
+		'micro-street',
+		'micro-wall-top',
+		'micro-wall-side',
+		'micro-floor',
+	];
+
+	buildingSprites.forEach(function(building) {
+		_self[building] = {
+			'normal':	{
+				spriteFrames:		{
+					e:		{frames: [building]}
+				},
+				ticksPerFrame:		500
+			}
+		};
+	});
+
 	// Building Obstacles
 	_self[`building-placeholder-shanty-1`] = {
 		'normal':	{
