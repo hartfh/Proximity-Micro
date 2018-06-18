@@ -1,5 +1,8 @@
 module.exports = {
 	'temp-micro-tiles':			'temp-micro-tiles.png',
+	'test-sign-horz':			'test-sign-horz.png',
+	'test-sign-vert':			'test-sign-vert.png',
+	'test-rolling-door':		'test-rolling-door.png',
 	'test-borders':			'test-borders.png',
 	'expl1':					'expl_1.png',
 	'expl-large':				'expl-large.png',
