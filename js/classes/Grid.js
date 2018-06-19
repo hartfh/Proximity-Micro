@@ -2951,10 +2951,10 @@ module.exports = function(width, height, config = {}) {
 		return points;
 	};
 
-	_self.seedLoop = function() {
-		var start		= _self.getRandomPoint();
-		var width		= Math.ceil(Math.random() * 60) + 9;
-		var height	= Math.ceil(Math.random() * 60) + 9;
+	_self.seedLoop = function(width, height, start) {
+		start	= start || _self.getRandomPoint();
+		width	= width || ( Math.ceil(Math.random() * 60) + 9 );
+		height	= height || ( Math.ceil(Math.random() * 60) + 9 );
 
 		// North edge
 		for(var x = 0, y = 0; x < width; x++) {

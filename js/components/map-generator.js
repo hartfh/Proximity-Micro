@@ -1,5 +1,6 @@
 var fs = require('fs');
 var Tilesets = require('../data/tilesets');
+var Building = require('./Building');
 
 module.exports = new function() {
 	let _self = this;
@@ -14,15 +15,6 @@ module.exports = new function() {
 
 	this.populateShell = function() {
 
-	};
-
-	this.seedBuilding = function() {
-		// start with rectangular area
-	};
-
-	this.createFootprint = function() {
-		// Turn large rectangle into series of smaller connected rectangles.
-		// Series of connected rooms
 	};
 
 	function _getDataPointExemplar(x, y) {
