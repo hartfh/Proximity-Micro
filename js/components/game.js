@@ -7,7 +7,6 @@ var ImageConverter	= require('./image-converter');
 var ImageLoader	= require('./image-loader');
 var Interface		= require('./interface');
 var Map			= require('./map');
-var MapGenerator	= require('./map-generator');
 var MapGrid		= require('./map-grid');
 var Menus			= require('./menus');
 var Mods			= require('./mods/mods');
@@ -36,7 +35,6 @@ var Game = {
 	ImageLoader:		ImageLoader,
 	Interface:		Interface,
 	Map:				Map,
-	MapGenerator:		MapGenerator,
 	MapGrid:			MapGrid,
 	Menus:			Menus,
 	Mods:			Mods,

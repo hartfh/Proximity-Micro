@@ -41,69 +41,64 @@ Building.prototype.addPrimaryRoom = function() {
 };
 
 Building.prototype.addSecondaryRooms = function() {
+	let self = this;
+	let primaryRoom = this.rooms[0];
 	let facings = [
 		{
-			facing:		'w',
-			faceLength:	0,
-			perpLenth:	0,
+			code:		'w',
+			basePoint:	{x: this.basePoint.x, y: primaryRoom.basePoint.y},
+			faceLength:	primaryRoom.height,
+			perpLenth:	primaryRoom.basePoint.x,
 		},
 		{
-			facing:	'n',
-			faceLength:	0,
-			perpLenth:	0,
+			code:		'n',
+			basePoint:	{x: primaryRoom.basePoint.x, y: this.basePoint.y},
+			faceLength:	primaryRoom.width,
+			perpLenth:	primaryRoom.basePoint.y,
 		},
 		{
-			facing:	'e',
-			faceLength:	0,
-			perpLenth:	0,
+			code:		'e',
+			basePoint:	{x: primaryRoom.basePoint.x + primaryRoom.width, y: this.basePoint.y},
+			faceLength:	primaryRoom.height,
+			perpLenth:	this.width - (primaryRoom.width + primaryRoom.basePoint.x),
 		},
 	];
 
 	facings.forEach(function(facing) {
+		let lengths = [];
 
-	});
-	// split up three facings of primary room into pieces (Utilities.subDivide
-	// check if remaining space for each facing is less than 5-6. If so, don't put any rooms there
-	// Utilities.subdivideLength(length, [1, 2, 3, 4, 5, 6]); // unsure how to set maximums. but if less than 5 or 6, disregard
-};
+		for(let i = 1; i < facingLength; i++) {
+			lengths.push(i);
+		}
 
-/*
-Building.prototype.addRoom = function(size) {
-     let thirdWidth		= (1 / 3) * this.width;
-     let thirdHeight	= (1 / 3) * this.height;
+		let roomWidths = Utilities.subdivideLength(facing.faceLength, lengths);
+		let baseOffset = {x: 0, y: 0};
 
-     if( size == 'big' ) {
-          let fromLeft	= Math.floor(Math.random() * thirdWidth);
-          let fromRight	= Math.floor(Math.random() * thirdWidth);
-          let fromTop	= Math.floor(Math.random() * thirdHeight);
+		roomWidths.forEach(function(width) {
+			if( width >= 5 && Math.random() > 0.01 ) {
+				let roomWidth;
+				let roomHeight;
+				let roomBasePoint = {x: facing.basePoint + baseOffset.x, y: facing.basePoint + baseOffset.y};
 
-          let width		= this.width - (fromLeft + fromRight);
-          let height	= this.height - fromTop;
+				if( facing.code == 'n' ) {
+					roomWidth		= width;
+					roomHeight	= room.perpLength;
+				} else {
+					roomWidth		= room.perpLength;
+					roomHeight	= width;
+				}
 
-		this.rooms.push( new Room(width, height, {x: this.basePoint.x + fromLeft, y: this.basePoint.y + fromRight}, 1, this) );
-     } else {
-		// Get primary room dimensions
-		if( this.rooms.length > 0 ) {
-			//let width		= Math.floor(Math.random() * this.rooms[0].width);
-			//let height	= Math.floor(Math.random() * this.rooms[0].height);
-
-			// determine flush with W, N or E wall
-			let randFacing = Math.random();
-
-			if( randFacing > 0.666 ) {
-				// west edge
-			} else if( randFacing > 0.333 ) {
-				// north edge
-			} else {
-				// east edge
+				self.rooms.push( new Room(roomWidth, roomHeight, roomBasePoint, 2, self) );
 			}
 
-
-			// set small room so it is flush with one of large room's walls (they share walls)
-		}
-     }
+			if( facing.code == 'n' ) {
+				baseOffset.x += width;
+			} else {
+				baseOffset.y += width;
+			}
+		});
+	});
 };
-*/
 
 Building.prototype.createGrid = function() {
 	let largest	= this.width > this.height ? this.width : this.height;
@@ -120,6 +115,7 @@ Building.prototype.createGrid = function() {
 			if( x == min.x || x == max.x || y == min.y || y == max.y ) {
 				if( !doorPlaced && roomIndex > 0 && wallGrid.getPoint(x, y) ) {
 					doorPlaced = true;
+					// TODO: doorways might need to be 2-3 wide
 					insideGrid.setPoint(x, y, 1);
 					wallGrid.setPoint(x, y, 0);
 				} else {
@@ -150,9 +146,5 @@ Building.prototype.createGrid = function() {
 
 	// Set hex values of each
 };
-
-// Convert to points/grid:
-     // Add aux room outlines, then add main room outline, then remove one aux. room wall piece per room and insert door doodads
-     // Inside: Do another grid that's just all combined points and subtract walls from it
 
 module.exports = Building;

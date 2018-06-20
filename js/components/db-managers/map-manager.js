@@ -38,7 +38,8 @@ module.exports = function() {
 			return false;
 		}
 
-		_map = MapFactory.createV7('blank');
+		//_map = MapFactory.createV7('blank');
+		_map = MapGenerator.createMap('blank');
 
 		_rollingLoad(callback, callbackArgs);
 
@@ -46,8 +47,8 @@ module.exports = function() {
 	};
 
 	_self.createMap = function(callback, callbackArgs) {
-		//_map = MapFactory.createV4();
-		_map = MapFactory.createV7();
+		//_map = MapFactory.createV7();
+		_map = MapGenerator.createMap();
 
 		_saveNewMap(callback, callbackArgs);
 	};

@@ -13,6 +13,7 @@ var List			= require('./js/classes/List');
 var Grid			= require('./js/classes/Grid');
 var Compass		= require('./js/classes/Compass');
 var MapFactory		= require('./js/classes/MapFactory');
+var MapGenerator	= require('./js/components/map-generator');
 var MapManager		= require('./js/components/db-managers/map-manager');
 var ProfileManager	= require('./js/components/db-managers/profile-manager');
 var SettingsManager	= require('./js/components/db-managers/settings-manager');
