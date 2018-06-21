@@ -1,14 +1,27 @@
 let mapAccess = require('./map-access');
 
 module.exports = function(intersectionGrid, mapGrid) {
-	const GRID_X_OFFSET = -1 * Constants.MAP_BLOCK_SIZE;
-	const GRID_Y_OFFSET = -1 * Constants.MAP_BLOCK_SIZE;
+	const GRID_X_OFFSET = -Constants.MAP_BLOCK_SIZE;
+	const GRID_Y_OFFSET = -Constants.MAP_BLOCK_SIZE;
+	let bldgIndex = 0;
 
 	intersectionGrid.eachPoint(function(point, x, y) {
 		let data			= intersectionGrid.getDataPoint(x, y);
 		let stamped		= false;
 		let stampPointsX	= [];
 		let stampPointsY	= [];
+
+		// Find top-left corner to insert building ID value
+		let cornerOffset = {x: 1, y: 1};
+
+		if( data.width.y > 1 ) {
+			cornerOffset.x++;
+		}
+		if( data.width.x > 1 ) {
+			cornerOffset.y++;
+		}
+
+		mapAccess.insertDataPointValue(mapGrid, data.base.x + cornerOffset.x + GRID_X_OFFSET, data.base.y + cornerOffset.y + GRID_Y_OFFSET, 'buildingID', bldgIndex++);
 
 		while( !stamped ) {
 			let basePoint = {

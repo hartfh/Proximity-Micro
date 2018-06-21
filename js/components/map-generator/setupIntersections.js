@@ -3,8 +3,9 @@ module.exports = function(intersectionGrid, config = {}) {
 		x:	[],
 		y:	[],
 	};
+	let gridDimensions = intersectionGrid.getDimensions();
 
-	for(let i = 0; i < Constants.MAP_BLOCK_HEIGHT; i++) {
+	for(let i = 0; i < gridDimensions.height; i++) {
 		let width		= 2;
 		let randVal	= Math.random();
 
@@ -19,7 +20,7 @@ module.exports = function(intersectionGrid, config = {}) {
 		widthTable.x.push(width);
 	}
 
-	for(let i = 0; i < Constants.MAP_BLOCK_WIDTH; i++) {
+	for(let i = 0; i < gridDimensions.width; i++) {
 		let width		= 2;
 		let randVal	= Math.random();
 

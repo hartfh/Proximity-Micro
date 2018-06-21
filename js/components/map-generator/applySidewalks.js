@@ -31,6 +31,38 @@ function _correctSidewalkDistricts(mapGrid) {
 	}
 }
 
+function _correctSidewalkBuildingIDs(mapGrid) {
+	mapGrid.eachPoint(function(point, x, y, thisGrid) {
+		if( point ) {
+			let dataPoint = thisGrid.getDataPoint(x, y);
+
+			 if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 ) {
+				 applyDistrictToNeighbors(x, y, dataPoint.buildingID);
+			 }
+		}
+	});
+
+	function applyDistrictToNeighbors(x, y, buildingID, depth = 0) {
+		let testPoints = mapGrid.getOrdinalNeighbors(x, y);
+
+		mapGrid.withPoints(testPoints, function(nghbrPoint, x, y) {
+			if( !nghbrPoint ) {
+				return;
+			}
+
+			let nghbrDataPoint = mapGrid.getDataPoint(x, y);
+
+			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID ) {
+				if( depth < 1200 ) {
+					//mapAccess.loadMapDistrict(mapGrid, x, y, district);
+					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
+					applyDistrictToNeighbors(x, y, buildingID, depth + 1);
+				}
+			}
+		});
+	}
+}
+
 module.exports = function(mapGrid) {
 	// Fill anything in that isn't a street
 	mapGrid.eachPoint(function(point, x, y, self) {
@@ -130,10 +162,17 @@ module.exports = function(mapGrid) {
 		});
 	}
 
+	/*
 	log('---districts added.');
 	_correctSidewalkDistricts(mapGrid);
 	_correctSidewalkDistricts(mapGrid);
 	log('---districts corrected.');
+	*/
+
+	log('building IDs added');
+	_correctSidewalkBuildingIDs(mapGrid);
+	_correctSidewalkBuildingIDs(mapGrid);
+	log('building IDs corrected');
 
 	mapGrid.addFilter(function(point, x, y) {
 		if( point ) {
@@ -147,6 +186,7 @@ module.exports = function(mapGrid) {
 		return false;
 	});
 
+	/*
 	// Purge certain unwanted sidewalk types and replace them with streets
 	let allowTypes = ['bend', 'corner', 'edge', 'inside'];
 	let search = true;
@@ -213,6 +253,7 @@ module.exports = function(mapGrid) {
 
 		return false;
 	});
+	*/
 
 	/*
 	mapGrid.setHexValues(false, false).eachPoint(function(point, x, y, self) {
@@ -229,7 +270,6 @@ module.exports = function(mapGrid) {
 	//mapGrid.setHexValues();
 
 	// turn off all dataPoint.temp values
-
 
 
 	log('done adding sidewalk actor data');

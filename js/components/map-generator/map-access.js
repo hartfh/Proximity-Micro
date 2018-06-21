@@ -2,7 +2,9 @@ module.exports = {
 	insertDataPointValue: function(grid, x, y, prop, value) {
 		var dataPoint = grid.getDataPoint(x, y);
 
-		dataPoint[prop] = value;
+		if( dataPoint ) {
+			dataPoint[prop] = value;
+		}
 	},
 	loadMapType: function(mapGrid, x, y, type) {
 		var dataPoint = mapGrid.getDataPoint(x, y);

@@ -6,6 +6,8 @@ let setupIntersections = require('./map-generator/setupIntersections');
 let applyStreets = require('./map-generator/applyStreets');
 let applySidewalks = require('./map-generator/applySidewalks');
 let applyBuildings = require('./map-generator/applyBuildings');
+let extractBuildingFootprints = require('./map-generator/extractBuildingFootprints');
+let seedBuildings = require('./map-generator/seedBuildings');
 
 module.exports = new function() {
 	let _self = this;
@@ -26,7 +28,7 @@ module.exports = new function() {
 		_setupActorData(map); log('Actor data setup.');
 
 		if( type != 'blank' ) {
-			_populateShell(map);
+			_populateShell(map); log('populations done');
 			_printMap(map);
 		}
 
@@ -42,6 +44,8 @@ module.exports = new function() {
 		//setupIntersections(trussGrid, {range: 0.85, zones: false});
 		applyStreets(intersectionGrid, map); log('Streets applied');
 		applySidewalks(map); log('Sidewalks seeded.');
+		seedBuildings(extractBuildingFootprints(map), map);
+		/*
 		applyBuildings(map); log('Buidings seeded.');
 		_seedCrosswalksV7(map); log('Crosswalks seeded.');
 		_seedStreetsV7(map); log('Streets seeded.');
@@ -50,6 +54,7 @@ module.exports = new function() {
 		_seedShantytownsV7(map);
 		_seedBlockadesV7(map); log('Bockades added.')
 		_seedSidewalkInfrastructure(map); log('Sidewalk infrastructure added.');
+		*/
 	}
 
 	function _getDataPointExemplar(x, y) {
@@ -62,6 +67,7 @@ module.exports = new function() {
 				'd':		[],	// doodads
 				'o':		[],	// obstacles
 			},
+			buildingID:	false,
 			density:		'low',
 			district:		0,
 			solid:		false,
@@ -1010,7 +1016,9 @@ module.exports = new function() {
 			if( !point ) {
 				//log('---map rendering issue---');
 			} else {
-				if( dataPoint.highbldg ) {
+				if( dataPoint.buildingID ) {
+					hex = '#ffffff';
+				} else if( dataPoint.highbldg ) {
 					hex = '#ff4433';
 				} else if( dataPoint.medbldg ) {
 					hex = '#ff8855';
