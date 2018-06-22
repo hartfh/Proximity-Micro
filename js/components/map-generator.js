@@ -1,13 +1,13 @@
 let fs = require('fs');
 let Tilesets = require('../data/tilesets');
 let Building = require('../classes/Building');
-//let mapAccess = require('./map-generator/map-access');
 let setupIntersections = require('./map-generator/setupIntersections');
 let applyStreets = require('./map-generator/applyStreets');
 let applySidewalks = require('./map-generator/applySidewalks');
 let applyBuildings = require('./map-generator/applyBuildings');
 let extractBuildingFootprints = require('./map-generator/extractBuildingFootprints');
 let seedBuildings = require('./map-generator/seedBuildings');
+let seedSidewalks = require('./map-generator/seedSidewalks');
 
 module.exports = new function() {
 	let _self = this;
@@ -43,8 +43,9 @@ module.exports = new function() {
 		setupIntersections(intersectionGrid); log('Intersections setup.');
 		//setupIntersections(trussGrid, {range: 0.85, zones: false});
 		applyStreets(intersectionGrid, map); log('Streets applied');
-		applySidewalks(map); log('Sidewalks seeded.');
-		seedBuildings(extractBuildingFootprints(map), map);
+		applySidewalks(map); log('Sidewalks applied.');
+		seedBuildings(extractBuildingFootprints(map), map); log('Buildings seeded.');
+		seedSidewalks(map); log('Sidewalks seeded.');
 		/*
 		applyBuildings(map); log('Buidings seeded.');
 		_seedCrosswalksV7(map); log('Crosswalks seeded.');
@@ -1003,7 +1004,7 @@ module.exports = new function() {
 
 		htmlMap = fs.openSync('z_htmlMap.html', 'w');
 
-		fs.writeSync(htmlMap, '<html><header><title>Visual Map</title><style type="text/css">.box { width: 4px; height: 4px; float: left; }</style></header><body>');
+		fs.writeSync(htmlMap, '<html><header><title>Visual Map</title><style type="text/css">body { width: 3000px; } .box { width: 4px; height: 4px; float: left; }</style></header><body>');
 
 		let output = '';
 
@@ -1016,8 +1017,10 @@ module.exports = new function() {
 			if( !point ) {
 				//log('---map rendering issue---');
 			} else {
-				if( dataPoint.buildingID ) {
+				if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
 					hex = '#ffffff';
+				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'floor' ) {
+					hex = '#997722';
 				} else if( dataPoint.highbldg ) {
 					hex = '#ff4433';
 				} else if( dataPoint.medbldg ) {

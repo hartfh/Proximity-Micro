@@ -53,7 +53,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 			let nghbrDataPoint = mapGrid.getDataPoint(x, y);
 
 			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID ) {
-				if( depth < 1200 ) {
+				if( depth < 1400 ) {
 					//mapAccess.loadMapDistrict(mapGrid, x, y, district);
 					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
 					applyDistrictToNeighbors(x, y, buildingID, depth + 1);

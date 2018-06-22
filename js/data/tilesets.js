@@ -173,4 +173,12 @@ module.exports = {
 		end:		[1, 1, 1, 1],
 		pipe:	[1, 1],
 	},
+	'test-wall-face':	{
+		inside:	[1, 0, 0, 0],
+	},
+	'test-wall-top':	{
+		corner:	[1, 1, 1, 1],
+		edge:	[1, 1, 1, 1],
+		pipe:	[1, 1],
+	},
 };

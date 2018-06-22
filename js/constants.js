@@ -16,7 +16,7 @@ module.exports = {
 	MAP_BLOCK_WIDTH:		18,
 	MAP_BLOCK_HEIGHT:		12,
 	//MAP_BLOCK_SIZE:		12, // one city block (# of tiles in width/height)
-	MAP_BLOCK_SIZE:		24, // 22
+	MAP_BLOCK_SIZE:		30, // 22
 	MAP_BUFFER_NORTH:		0,
 	MAP_BUFFER_EAST:		0,
 	MAP_BUFFER_SOUTH:		0,
@@ -25,7 +25,7 @@ module.exports = {
 	MAP_REGION_WIDTH:		3,
 	AREA_TILE_SIZE_X:		8,
 	AREA_TILE_SIZE_Y:		6,
-	TERRAIN_TILE_SIZE:		72, // 22
+	TERRAIN_TILE_SIZE:		22, // 72
 	VPORT_WIDTH:			480,
 	VPORT_HEIGHT:			270,
 	VPORT_X_BUFFER:		190,

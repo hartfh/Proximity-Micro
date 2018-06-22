@@ -874,6 +874,8 @@ tilesetToImages('sidewalk-6');
 tilesetToImages('street-markings');
 tilesetToImages('street-markings-yield');
 tilesetToImages('street-median');
+//tilesetToImages('test-wall-face');
+//tilesetToImages('test-wall-top');
 
 
 function textToImages(dataSet, font) {

@@ -1049,6 +1049,9 @@ module.exports = function() {
 	_expandTileset('rooftop-6', _self.tileExemplar);
 	_expandTileset('filler', _self.tileExemplar);
 
+	_expandTileset('test-wall-face', _self.tileExemplar);
+	_expandTileset('test-wall-top', _self.tileExemplar);
+
 
 	return _self;
 }();
