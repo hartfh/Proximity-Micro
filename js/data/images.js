@@ -5,27 +5,6 @@ var Tilesets	= require('./tilesets');
 const TS = Constants.TERRAIN_TILE_SIZE;
 
 var images = {
-	'micro-roof':			{
-		sheet: 'temp-micro-tiles', x: 0, y: 0, w: TS, h: TS
-	},
-	'micro-building':		{
-		sheet: 'temp-micro-tiles', x: 0, y: TS, w: TS, h: TS
-	},
-	'micro-sidewalk':		{
-		sheet: 'temp-micro-tiles', x: 0, y: TS*2, w: TS, h: TS
-	},
-	'micro-street':		{
-		sheet: 'temp-micro-tiles', x: 0, y: TS*3, w: TS, h: TS
-	},
-	'micro-wall-top':		{
-		sheet: 'temp-micro-tiles', x: 0, y: TS*5, w: TS, h: TS
-	},
-	'micro-wall-side':		{
-		sheet: 'temp-micro-tiles', x: 0, y: TS*6, w: TS, h: TS
-	},
-	'micro-floor':			{
-		sheet: 'temp-micro-tiles', x: 0, y: TS*7, w: TS, h: TS
-	},
 	'person-1-east-normal':			{
 		sheet: 'person-1', x: 50, y: 40, w: 25, h: 40
 	},
@@ -874,8 +853,11 @@ tilesetToImages('sidewalk-6');
 tilesetToImages('street-markings');
 tilesetToImages('street-markings-yield');
 tilesetToImages('street-median');
-//tilesetToImages('test-wall-face');
-//tilesetToImages('test-wall-top');
+tilesetToImages('test-wall-face');
+tilesetToImages('test-wall-top');
+tilesetToImages('test-facade');
+tilesetToImages('test-roof');
+tilesetToImages('test-sidewalk');
 
 
 function textToImages(dataSet, font) {

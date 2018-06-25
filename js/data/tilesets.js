@@ -173,12 +173,31 @@ module.exports = {
 		end:		[1, 1, 1, 1],
 		pipe:	[1, 1],
 	},
+	'test-sidewalk':		{
+		bend:	[1, 1, 1, 1],
+		corner:	[1, 1, 1, 1],
+		edge:	[1, 1, 1, 1],
+		inside:	[1],
+	},
+	'test-facade':		{
+		corner:	[1, 1, 1, 1],
+		edge:	[1, 1, 1, 1],
+		inside:	[1],
+	},
+	'test-roof':		{
+		corner:	[1, 1, 1, 1],
+		edge:	[1, 1, 1, 1],
+		inside:	[1],
+	},
 	'test-wall-face':	{
-		inside:	[1, 0, 0, 0],
+		inside:	[1],
 	},
 	'test-wall-top':	{
 		corner:	[1, 1, 1, 1],
 		edge:	[1, 1, 1, 1],
+		elbow:	[1, 1, 1, 1],
+		end:		[1, 1, 1, 1],
 		pipe:	[1, 1],
+		//tee:	[1, 1, 1, 1],
 	},
 };

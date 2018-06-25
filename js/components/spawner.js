@@ -69,7 +69,7 @@ module.exports = new function() {
                     if( charData.current < charData.target ) {
                          if( Math.random() < charData.chance ) {
 						for(var n = 0; n < 3; n++) {
-							_inject(profiles, group, mapGridBounds);
+							//_inject(profiles, group, mapGridBounds);
 						}
                          }
                     }

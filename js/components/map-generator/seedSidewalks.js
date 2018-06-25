@@ -30,9 +30,10 @@ module.exports = function(mapGrid) {
 			let dataPoint = self.getDataPoint(x, y);
 			let metaPoint = self.getMetaPoint(x, y);
 
-			// NOTE: need to deal with sidewalk tiles that don't yet exist
+			// NOTE: need to deal with sidewalk tile types that don't yet exist
 
-			mapAccess.loadMapActorData(self, x, y, `sidewalk-${dataPoint.district}`, 'doodad', metaPoint);
+			//mapAccess.loadMapActorData(self, x, y, `sidewalk-${dataPoint.district}`, 'doodad', metaPoint);
+			mapAccess.loadMapActorData(self, x, y, `test-sidewalk`, 'doodad', metaPoint);
 		}
 	});
 

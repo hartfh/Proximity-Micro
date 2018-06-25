@@ -137,6 +137,9 @@ module.exports = function(doodads) {
 		'rooftop-4',
 		'rooftop-6',
 		'building-shadow',
+		'test-facade',
+		'test-roof',
+		'test-sidewalk',
 		'test-wall-face',
 		'test-wall-top',
 	];
@@ -191,6 +194,9 @@ module.exports = function(doodads) {
 
 	_self['test-wall-face'].body.zindex = roofZIndex;
 	_self['test-wall-top'].body.zindex = roofZIndex;
+	_self['test-facade'].body.zindex = roofZIndex;
+	_self['test-roof'].body.zindex = roofZIndex;
+	_self['test-sidewalk'].body.zindex = sidewalkZIndex;
 
 	/*
 	_self['e-mover-tile'] = Utilities.clone(moverTile);

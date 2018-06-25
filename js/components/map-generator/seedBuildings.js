@@ -17,6 +17,7 @@ module.exports = function(bldgList, mapGrid) {
 
 		data.points.forEach(function(point, index) {
 			bldgGrid.setPoint(point.x - data.min.x, point.y - data.min.y, 1);
+			bldgGrid.setDataPoint(point.x - data.min.x, point.y - data.min.y, {});
 		});
 
 		// TODO: figure out location of 1+ doors. Or 0 if points.length is sufficiently small
@@ -73,7 +74,8 @@ module.exports = function(bldgList, mapGrid) {
 			}
 
 			doors.forEach(function(door) {
-				bldgGrid.setDataPoint(door.x, door.y, {door: true});
+				mapAccess.insertDataPointValue(bldgGrid, door.x, door.y, 'door', true);
+				//bldgGrid.setDataPoint(door.x, door.y, {door: true});
 			});
 		}
 
@@ -93,7 +95,7 @@ module.exports = function(bldgList, mapGrid) {
 						mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y, 'type', 'building');
 						mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y, 'subtype', mapSubType);
 
-						mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'wall');
+						mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', mapSubType);
 
 						if( !dataPoint.door ) {
 							mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y, 'filler', 'terrain');
@@ -117,7 +119,7 @@ module.exports = function(bldgList, mapGrid) {
 				return false;
 			});
 
-			bldgGrid.setHexValues(false, false).eachPoint(function(point, x, y, self) {
+			bldgGrid.setHexValues('reduced15', false).eachPoint(function(point, x, y, self) {
 				if( point ) {
 					let metaPoint = self.getMetaPoint(x, y);
 					let mapCoords = {
@@ -126,8 +128,28 @@ module.exports = function(bldgList, mapGrid) {
 					};
 
 					// load wall face at y and y - 1. Don't place if metaPoint is a vertical pipe or vertical edge. Or top 2 corners
+					if( metaPoint.type == 'inside' ) {
+						return;
+					}
+					//log(metaPoint.type)
+					//metaPoint.type = 'corner';
+					//metaPoint.rotations = 0;
+					//mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y - 2, 'subtype', 'roof-top');
+					mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y - 2, 'test-wall-top', 'doodad', metaPoint);
 
-					//mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y - 2, 'test-wall-top', 'doodad', metaPoint);
+					let wallFace = false;
+
+					if( metaPoint.type == 'pipe' && metaPoint.rotations == 1 ) {
+						wallFace = true;
+					}
+
+					if( wallFace ) {
+						for(let i = 0; i < 2; i++) {
+							metaPoint.type = 'inside';
+							metaPoint.rotations = 0;
+							mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y - i, 'test-wall-face', 'doodad', metaPoint);
+						}
+					}
 				}
 			});
 		}

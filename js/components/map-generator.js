@@ -1019,6 +1019,8 @@ module.exports = new function() {
 			} else {
 				if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
 					hex = '#ffffff';
+				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'roof-top' ) {
+					hex = '#ff7722';
 				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'floor' ) {
 					hex = '#997722';
 				} else if( dataPoint.highbldg ) {
