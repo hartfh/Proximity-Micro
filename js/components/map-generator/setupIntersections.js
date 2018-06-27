@@ -32,6 +32,9 @@ module.exports = function(intersectionGrid, config = {}) {
 			}
 		}
 
+		// TEMP:
+		width = 3;
+
 		widthTable.y.push(width);
 	}
 
@@ -44,6 +47,7 @@ module.exports = function(intersectionGrid, config = {}) {
 		const MODIFIER_RANGE	= config.range || 0.4;
 		const ZONE_CHANCE		= 0.25;
 		const ZONES			= ['blockade'];
+		const OFFSET_RANGE		= 0.4;
 
 		let xModifier	= 0;
 		let yModifier	= 0;
@@ -54,12 +58,12 @@ module.exports = function(intersectionGrid, config = {}) {
 
 		if( Math.random() < CHANCE_TO_OFFSET ) {
 			xModifier	= Math.random() * MODIFIER_RANGE;
-			xModifier	= ( Math.random() > 0.5 && x > 0 ) ? -xModifier : xModifier;
+			xModifier	= ( Math.random() > OFFSET_RANGE && x > 0 ) ? -xModifier : xModifier;
 			xOffset	= Math.round(Constants.MAP_BLOCK_SIZE * xModifier);
 		}
 		if( Math.random() < CHANCE_TO_OFFSET ) {
 			yModifier	= Math.random() * MODIFIER_RANGE;
-			yModifier	= ( Math.random() > 0.5 && y > 0 ) ? -yModifier : yModifier;
+			yModifier	= ( Math.random() > OFFSET_RANGE && y > 0 ) ? -yModifier : yModifier;
 			yOffset	= Math.round(Constants.MAP_BLOCK_SIZE * yModifier);
 		}
 		if( config.zones !== false ) {

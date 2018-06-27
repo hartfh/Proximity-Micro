@@ -450,7 +450,24 @@ module.exports = function() {
 		let binary = parseInt(hex, 16).toString(2).padStart(bytes * 8, '0');
 
 		return binary;
-	}
+	};
+
+	_self.getRandomColor = function() {
+		let hex = '#';
+
+		for(let i = 0; i < 3; i++) {
+			let randInt = Math.floor(Math.random() * 256);
+			let hexVal = randInt.toString(16);
+
+			if( hexVal.length == 1 ) {
+				hexVal = '0' + hexVal;
+			}
+
+			hex += hexVal;
+		}
+
+		return hex;
+	};
 
 	return _self;
 }();

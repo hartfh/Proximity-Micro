@@ -13,10 +13,10 @@ module.exports = {
 	MAP_TILE_WIDTH:		99,
 	//MAP_BLOCK_WIDTH:		30, // 28 + buffers
 	//MAP_BLOCK_HEIGHT:		20, // 18 + buffers
-	MAP_BLOCK_WIDTH:		18,
-	MAP_BLOCK_HEIGHT:		12,
+	MAP_BLOCK_WIDTH:		18, // unused?
+	MAP_BLOCK_HEIGHT:		12, // unused?
 	//MAP_BLOCK_SIZE:		12, // one city block (# of tiles in width/height)
-	MAP_BLOCK_SIZE:		30, // 22
+	MAP_BLOCK_SIZE:		36, // 22
 	MAP_BUFFER_NORTH:		0,
 	MAP_BUFFER_EAST:		0,
 	MAP_BUFFER_SOUTH:		0,

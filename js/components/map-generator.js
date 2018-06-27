@@ -1017,7 +1017,9 @@ module.exports = new function() {
 			if( !point ) {
 				//log('---map rendering issue---');
 			} else {
-				if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
+				if( dataPoint.color ) {
+					hex = dataPoint.color;
+				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
 					hex = '#ffffff';
 				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'roof-top' ) {
 					hex = '#ff7722';

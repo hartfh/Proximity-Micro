@@ -24,17 +24,86 @@ module.exports = function(bldgList, mapGrid) {
 		// When adding terrain filler, skip location of doors. Also ignore from any interior work.
 
 		shrinkFootprint();
-		markDoors();
-		seedWalls();
+		let doors = markDoors();
+		seedWalls(doors);
 		seedInterior();
 		seedExterior();
 
+		let color = Utilities.getRandomColor();
+		bldgGrid.eachPoint(function(point, x, y, self) {
+			if( point ) {
+				mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'color', color);
+			}
+		});
+
 		function shrinkFootprint() {
+			// Reduce by two tiles
+			for(let i = 0; i < 2; i++) {
+				bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
+					if( point ) {
+						let metaPoint = self.getMetaPoint(x, y);
+
+						if( metaPoint.type != 'inside' ) {
+							self.setPoint(x, y, 0);
+						}
+					}
+				});
+			}
+
 			bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
 				if( point ) {
 					let metaPoint = self.getMetaPoint(x, y);
+					let remove = false;
 
-					if( metaPoint.type != 'inside' ) {
+					if( metaPoint.type == 'island' || metaPoint.type == 'pipe' || metaPoint.type == 'end' ) {
+						remove = true;
+					}
+					if( metaPoint.type == 'edge' ) {
+						let offset1 = {x: 0, y: 0};
+						let offset2 = {x: 0, y: 0};
+
+						switch(metaPoint.rotations) {
+							case 0:
+								offset1.y = -1;
+								offset2.y = -2;
+								break;
+							case 1:
+								offset1.x = 1;
+								offset2.x = 2;
+								break;
+							case 2:
+								offset1.y = 1;
+								offset2.y = 2;
+								break;
+							case 3:
+								offset1.x = -1;
+								offset2.x = -2;
+								break;
+							default:
+								break;
+						}
+
+						let metaPoint1 = self.getMetaPoint(x + offset1.x, y + offset1.y);
+						let metaPoint2 = self.getMetaPoint(x + offset2.x, y + offset2.y);
+
+						if( metaPoint1.type == 'edge' ) {
+							remove = true;
+						}
+						if( metaPoint2.type == 'edge' ) {
+							remove = true;
+						}
+					}
+					if( remove ) {
+						mapAccess.insertDataPointValue(self, x, y, 'remove', true);
+					}
+				}
+			});
+
+			bldgGrid.eachPoint(function(point, x, y, self) {
+				if( point ) {
+					let dataPoint = self.getDataPoint(x, y);
+
+					if( dataPoint.remove ) {
 						self.setPoint(x, y, 0);
 					}
 				}
@@ -44,7 +113,7 @@ module.exports = function(bldgList, mapGrid) {
 				if( point ) {
 					let metaPoint = self.getMetaPoint(x, y);
 
-					if( metaPoint.type == 'pipe' || metaPoint.type == 'end' ) {
+					if( metaPoint.type == 'pipe' || metaPoint.type == 'end' || metaPoint.type == 'island' ) {
 						self.setPoint(x, y, 0);
 					}
 				}
@@ -77,9 +146,11 @@ module.exports = function(bldgList, mapGrid) {
 				mapAccess.insertDataPointValue(bldgGrid, door.x, door.y, 'door', true);
 				//bldgGrid.setDataPoint(door.x, door.y, {door: true});
 			});
+
+			return doors;
 		}
 
-		function seedWalls() {
+		function seedWalls(doors) {
 			bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
 				if( point ) {
 					let metaPoint = self.getMetaPoint(x, y);
@@ -106,6 +177,55 @@ module.exports = function(bldgList, mapGrid) {
 					}
 				}
 			});
+
+			// Partition method #2
+			// Look for "bend" tiles and extend walls out opposite them. Place a door on any wall that gets added
+
+			 /* Partition method #1
+			for(let p = 0; p < 1; p++) {
+				let dims = bldgGrid.getDimensions();
+				let xCoord = Math.floor( Utilities.randomFromTo(3, dims.width - 3) );
+
+				// Compare against doors
+				for(let d = 0; d < doors.length; d++) {
+					if( xCoord == doors[d].x ) {
+						continue;
+					}
+				}
+
+				// Seed points vertically with one gap
+				let majorPartitionPoints = [];
+				for(let yCoord = 0; yCoord < dims.height; yCoord++) {
+					if( bldgGrid.getPoint(xCoord, yCoord) ) {
+						mapAccess.insertDataPointValue(bldgGrid, xCoord, yCoord, 'type', 'wall');
+						let mapCoords = {
+							x:	xCoord + data.min.x,
+							y:	yCoord + data.min.y,
+						};
+						mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y, 'subtype', 'wall');
+
+						majorPartitionPoints.push({x: xCoord, y: yCoord});
+					}
+				}
+
+				// pick door point, and then 0 - 3 horizontal partitions
+				majorPartitionPoints.pop();
+				majorPartitionPoints.shift();
+				let majorDoor = majorPartitionPoints.random();
+
+				//const NUM_HORZ_PARTITIONS = Math.floor(Math.random() * 3);
+
+				//for(let n = 0; n < NUM_HORZ_PARTITIONS; n++) {
+					// seed horizontal partition and door
+				//}
+
+
+				if( majorDoor ) {
+					mapAccess.insertDataPointValue(bldgGrid, majorDoor.x, majorDoor.y, 'type', 'floor');
+					mapAccess.insertDataPointValue(mapGrid, majorDoor.x + data.min.x, majorDoor.y + data.min.y, 'subtype', 'floor');
+				}
+			}
+			*/
 
 			bldgGrid.addFilter(function(point, x, y) {
 				if( point ) {
@@ -160,10 +280,22 @@ module.exports = function(bldgList, mapGrid) {
 					let metaPoint = self.getMetaPoint(x, y);
 
 					if( metaPoint.type == 'inside' ) {
-						mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'type', 'building');
-						mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'subtype', 'floor');
+						let bldgDataPoint = bldgGrid.getDataPoint(x, y);
+						let mapDataPoint = mapGrid.getDataPoint(x + data.min.x, y + data.min.y);
 
-						mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'floor');
+						mapDataPoint.type = 'building';
+
+						if( bldgDataPoint.type != 'wall' ) {
+							bldgDataPoint.type = 'floor';
+							mapDataPoint.subtype = 'floor';
+						}
+
+						//mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'type', 'building');
+						//mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'subtype', 'floor');
+
+								//mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'floor');
+
+						// load map actor: floor. maybe ignore metaType and just have one floor tile for all configurations
 					}
 				}
 			});

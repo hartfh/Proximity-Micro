@@ -102,6 +102,7 @@ var Game = {
 
 // General interface methods
 Game.start = function() {
+	log('game starting')
 	var loadingTracker = new AsynchChecker(3, function() {
 		log('Settings/Audio/Images loaded fully');
 		Game.route('mainmenu/title');
