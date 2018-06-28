@@ -26,15 +26,16 @@ module.exports = function(bldgList, mapGrid) {
 		shrinkFootprint();
 		let doors = markDoors();
 		seedWalls(doors);
-		seedInterior();
-		seedExterior();
 
-		let color = Utilities.getRandomColor();
-		bldgGrid.eachPoint(function(point, x, y, self) {
-			if( point ) {
-				mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'color', color);
+		bldgGrid.eachDataPoint(function(dataPoint, x, y, self) {
+			if( !dataPoint ) {
+				self.setDataPoint(x, y, {});
 			}
 		});
+
+		seedInterior();
+		seedExterior();
+		//applyColoring();
 
 		function shrinkFootprint() {
 			// Reduce by two tiles
@@ -167,6 +168,7 @@ module.exports = function(bldgList, mapGrid) {
 						mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y, 'subtype', mapSubType);
 
 						mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', mapSubType);
+						mapAccess.insertDataPointValue(bldgGrid, x, y, 'shell', true);
 
 						if( !dataPoint.door ) {
 							mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y, 'filler', 'terrain');
@@ -178,54 +180,7 @@ module.exports = function(bldgList, mapGrid) {
 				}
 			});
 
-			// Partition method #2
-			// Look for "bend" tiles and extend walls out opposite them. Place a door on any wall that gets added
-
-			 /* Partition method #1
-			for(let p = 0; p < 1; p++) {
-				let dims = bldgGrid.getDimensions();
-				let xCoord = Math.floor( Utilities.randomFromTo(3, dims.width - 3) );
-
-				// Compare against doors
-				for(let d = 0; d < doors.length; d++) {
-					if( xCoord == doors[d].x ) {
-						continue;
-					}
-				}
-
-				// Seed points vertically with one gap
-				let majorPartitionPoints = [];
-				for(let yCoord = 0; yCoord < dims.height; yCoord++) {
-					if( bldgGrid.getPoint(xCoord, yCoord) ) {
-						mapAccess.insertDataPointValue(bldgGrid, xCoord, yCoord, 'type', 'wall');
-						let mapCoords = {
-							x:	xCoord + data.min.x,
-							y:	yCoord + data.min.y,
-						};
-						mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y, 'subtype', 'wall');
-
-						majorPartitionPoints.push({x: xCoord, y: yCoord});
-					}
-				}
-
-				// pick door point, and then 0 - 3 horizontal partitions
-				majorPartitionPoints.pop();
-				majorPartitionPoints.shift();
-				let majorDoor = majorPartitionPoints.random();
-
-				//const NUM_HORZ_PARTITIONS = Math.floor(Math.random() * 3);
-
-				//for(let n = 0; n < NUM_HORZ_PARTITIONS; n++) {
-					// seed horizontal partition and door
-				//}
-
-
-				if( majorDoor ) {
-					mapAccess.insertDataPointValue(bldgGrid, majorDoor.x, majorDoor.y, 'type', 'floor');
-					mapAccess.insertDataPointValue(mapGrid, majorDoor.x + data.min.x, majorDoor.y + data.min.y, 'subtype', 'floor');
-				}
-			}
-			*/
+			placePartitions(doors);
 
 			bldgGrid.addFilter(function(point, x, y) {
 				if( point ) {
@@ -359,6 +314,163 @@ module.exports = function(bldgList, mapGrid) {
 				// look at bottom edge and 1 up from it (type == firstfloor)
 
 			// load into mapGrid
+		}
+
+		function placePartitions(doors) {
+			let bends = [];
+
+			function getExtension(base, extender, continueType) {
+				let points	= [];
+				let length	= 1;
+
+				do {
+					let coords	= {x: base.x + extender.x * length, y: base.y + extender.y * length};
+					let point		= bldgGrid.getPoint(coords.x, coords.y);
+					let metaPoint	= bldgGrid.getMetaPoint(coords.x, coords.y);
+
+					length++;
+
+					if( !point || metaPoint.type != continueType ) {
+						length = false;
+					} else {
+						points.push(coords);
+					}
+				} while( length )
+
+				return points;
+			}
+
+			bldgGrid.eachPoint(function(point, x, y, self) {
+				if( point ) {
+					let metaPoint = self.getMetaPoint(x, y);
+
+					if( metaPoint.type == 'bend' ) {
+						const MIN_ROOM_SIZE = 4;
+						let bend = {};
+
+						bend.base = {x: x, y: y};
+						bend.extension1 = {x: 0, y: 0};
+						bend.extension2 = {x: 0, y: 0};
+
+						switch(metaPoint.rotations) {
+							case 0:
+								bend.extension1.y = -1;
+								bend.extension2.x = -1;
+								break;
+							case 1:
+								bend.extension1.x = 1;
+								bend.extension2.y = -1;
+								break;
+							case 2:
+								bend.extension1.y = 1;
+								bend.extension2.x = 1;
+								break;
+							case 3:
+								bend.extension1.x = -1;
+								bend.extension2.y = 1;
+								break;
+							default:
+								break;
+						}
+
+						bend.negExtension1Points = getExtension(bend.base, {x: -bend.extension2.x, y: -bend.extension2.y}, 'edge');
+						bend.negExtension2Points = getExtension(bend.base, {x: -bend.extension1.x, y: -bend.extension1.y}, 'edge');
+
+						if( bend.negExtension1Points.length > MIN_ROOM_SIZE ) {
+							bend.extension1Points = getExtension(bend.base, bend.extension1, 'inside');
+						}
+						if( bend.negExtension2Points.length > MIN_ROOM_SIZE ) {
+							bend.extension2Points = getExtension(bend.base, bend.extension2, 'inside');
+						}
+
+						bends.push(bend);
+					}
+				}
+			});
+
+			let expandedBends = [];
+
+			bends.forEach(function(bend) {
+				if( bend.extension1Points && bend.extension1Points.length > 1 ) {
+					expandedBends.push({
+						base:		bend.base,
+						points:		bend.extension1Points,
+						alignment:	(bend.extension1Points[0].x == bend.extension1Points[1].x) ? 'vertical' : 'horizontal',
+					});
+				}
+				if( bend.extension2Points && bend.extension2Points.length > 1 ) {
+					expandedBends.push({
+						base:		bend.base,
+						points:		bend.extension2Points,
+						alignment:	(bend.extension2Points[0].x == bend.extension2Points[1].x) ? 'vertical' : 'horizontal',
+					});
+				}
+			});
+
+			expandedBends.sort(function(a, b) {
+				if( a.points.length < b.points.length ) {
+					return -1;
+				} else if( a.points.length > b.points.length ) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+
+			expandedBends.forEach(function(bend, index) {
+				let covered = [];
+
+				// Skip and vertical partitions that might hit an external door
+				if( bend.alignment == 'vertical' ) {
+					for(let i = 0; i < doors.length; i++) {
+						if( bend.base.x == doors[i].x ) {
+							return;
+						}
+					}
+				}
+
+				for(let i = 0; i < bend.points.length; i++) {
+					let extCoords = bend.points[i];
+					let dataPoint = bldgGrid.getDataPoint(extCoords.x, extCoords.y);
+
+					if( dataPoint.type == 'wall' ) {
+						break;
+					} else {
+						mapAccess.insertDataPointValue(bldgGrid, extCoords.x, extCoords.y, 'type', 'wall');
+						mapAccess.insertDataPointValue(mapGrid, extCoords.x + data.min.x, extCoords.y + data.min.y, 'subtype', 'wall');
+
+						covered.push({x: extCoords.x, y: extCoords.y});
+					}
+				}
+
+				let tempDoor = covered.random();
+
+				if( tempDoor ) {
+					mapAccess.insertDataPointValue(bldgGrid, tempDoor.x, tempDoor.y, 'temp-door', true);
+				}
+			});
+
+
+
+			// Finally, convert all temporary doors into actual doors
+			bldgGrid.eachDataPoint(function(dataPoint, x, y, self) {
+				if( dataPoint && dataPoint['temp-door'] ) {
+					mapAccess.insertDataPointValue(bldgGrid, x, y, 'temp-door', false);
+					mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'floor');
+
+					mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'subtype', 'floor');
+				}
+			});
+		}
+
+		function applyColoring() {
+			let color = Utilities.getRandomColor();
+
+			bldgGrid.eachPoint(function(point, x, y, self) {
+				if( point ) {
+					mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'color', color);
+				}
+			});
 		}
 	}
 };
