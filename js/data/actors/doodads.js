@@ -137,6 +137,7 @@ module.exports = function(doodads) {
 		'rooftop-4',
 		'rooftop-6',
 		'building-shadow',
+		'test-floor',
 		'test-facade',
 		'test-roof',
 		'test-sidewalk',
@@ -196,6 +197,7 @@ module.exports = function(doodads) {
 	_self['test-wall-top'].body.zindex = roofZIndex;
 	_self['test-facade'].body.zindex = roofZIndex;
 	_self['test-roof'].body.zindex = roofZIndex;
+	_self['test-floor'].body.zindex = sidewalkZIndex;
 	_self['test-sidewalk'].body.zindex = sidewalkZIndex;
 
 	/*

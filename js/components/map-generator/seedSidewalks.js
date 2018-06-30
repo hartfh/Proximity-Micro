@@ -17,7 +17,7 @@ module.exports = function(mapGrid) {
 		if( point ) {
 			let dataPoint = mapGrid.getDataPoint(x, y);
 
-			if( dataPoint.type == 'sidewalk' ) {
+			if( dataPoint.type == 'sidewalk' || dataPoint['sidewalk-temp'] ) {
 				return point;
 			}
 		}
@@ -34,6 +34,8 @@ module.exports = function(mapGrid) {
 
 			//mapAccess.loadMapActorData(self, x, y, `sidewalk-${dataPoint.district}`, 'doodad', metaPoint);
 			mapAccess.loadMapActorData(self, x, y, `test-sidewalk`, 'doodad', metaPoint);
+
+			delete dataPoint['sidewalk-temp'];
 		}
 	});
 

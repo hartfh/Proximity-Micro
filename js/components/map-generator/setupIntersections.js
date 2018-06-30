@@ -17,6 +17,9 @@ module.exports = function(intersectionGrid, config = {}) {
 			}
 		}
 
+		// TEMP:
+		width = 3;
+
 		widthTable.x.push(width);
 	}
 

@@ -5,6 +5,7 @@ module.exports = {
 	'test-roof':				'test-22-roof.png',
 	'test-wall-face':			'test-22-wall-face.png',
 	'test-wall-top':			'test-22-wall-top.png',
+	'test-floor':				'test-22-floor.png',
 	'test-sidewalk':			'test-22-sidewalk.png',
 	'test-rolling-door':		'test-22-rolling-door.png',
 

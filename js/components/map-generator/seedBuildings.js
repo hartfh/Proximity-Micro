@@ -35,7 +35,7 @@ module.exports = function(bldgList, mapGrid) {
 
 		seedInterior();
 		seedExterior();
-		//applyColoring();
+		applyColoring();
 
 		function shrinkFootprint() {
 			// Reduce by two tiles
@@ -232,11 +232,12 @@ module.exports = function(bldgList, mapGrid) {
 		function seedInterior() {
 			bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
 				if( point ) {
-					let metaPoint = self.getMetaPoint(x, y);
+					let metaPoint		= self.getMetaPoint(x, y);
+					let dataPoint		= self.getDataPoint(x, y);
+					let mapDataPoint	= mapGrid.getDataPoint(x + data.min.x, y + data.min.y);
 
 					if( metaPoint.type == 'inside' ) {
 						let bldgDataPoint = bldgGrid.getDataPoint(x, y);
-						let mapDataPoint = mapGrid.getDataPoint(x + data.min.x, y + data.min.y);
 
 						mapDataPoint.type = 'building';
 
@@ -251,13 +252,23 @@ module.exports = function(bldgList, mapGrid) {
 								//mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'floor');
 
 						// load map actor: floor. maybe ignore metaType and just have one floor tile for all configurations
+						mapAccess.loadMapActorData(mapGrid, x + data.min.x, y + data.min.y, 'test-floor', 'doodad', {type: 'inside', rotations: 0});
+					}
+					if( dataPoint.shell ) {
+						mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'sidewalk-temp', true);
 					}
 				}
 			});
+
+
+			// look at all floor-type points. re-use algorithm from old MapFactory got placing building rectangles.
+			// Before placing rectangles, or maybe as part of it, place longer ones near walls (furniture up against or close to walls).
 		}
 
 		function seedExterior() {
 			let facadeGrid = new Grid(data.width, data.height + ELEVATION);
+			// let roofGrid = new Grid(data.width, data.height);
+			// copy over all bldgGrid points into roofGrid
 
 			// Roof
 			bldgGrid.eachPoint(function(point, x, y, self) {
@@ -267,7 +278,7 @@ module.exports = function(bldgList, mapGrid) {
 					//mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y - ELEVATION, 'test-roof', 'doodad', metaPoint);
 
 					if( metaPoint.type == 'inside' ) {
-						// load roof top doodad actor at -ELEVATION
+
 					} else if( metaPoint.type == 'edge' && metaPoint.rotations == 0 ) {
 						for(let i = 0; i < ELEVATION; i++) {
 							let type = '';
@@ -317,6 +328,8 @@ module.exports = function(bldgList, mapGrid) {
 		}
 
 		function placePartitions(doors) {
+			const CHANCE_TO_SKIP = 0.25;
+			const MIN_ROOM_SIZE = 4;
 			let bends = [];
 
 			function getExtension(base, extender, continueType) {
@@ -345,12 +358,15 @@ module.exports = function(bldgList, mapGrid) {
 					let metaPoint = self.getMetaPoint(x, y);
 
 					if( metaPoint.type == 'bend' ) {
-						const MIN_ROOM_SIZE = 4;
+						if( Math.random() < CHANCE_TO_SKIP ) {
+							return;
+						}
+
 						let bend = {};
 
-						bend.base = {x: x, y: y};
-						bend.extension1 = {x: 0, y: 0};
-						bend.extension2 = {x: 0, y: 0};
+						bend.base			= {x: x, y: y};
+						bend.extension1	= {x: 0, y: 0};
+						bend.extension2	= {x: 0, y: 0};
 
 						switch(metaPoint.rotations) {
 							case 0:
@@ -419,29 +435,51 @@ module.exports = function(bldgList, mapGrid) {
 
 			expandedBends.forEach(function(bend, index) {
 				let covered = [];
+				let perpendicular = {x: 0, y: 0};
 
-				// Skip and vertical partitions that might hit an external door
+				// Skip any vertical partitions that might hit an external door
 				if( bend.alignment == 'vertical' ) {
+					perpendicular.x = 1;
+
 					for(let i = 0; i < doors.length; i++) {
 						if( bend.base.x == doors[i].x ) {
 							return;
 						}
 					}
+				} else {
+					perpendicular.y = 1;
 				}
 
+				wallExtensionLoop:
 				for(let i = 0; i < bend.points.length; i++) {
 					let extCoords = bend.points[i];
 					let dataPoint = bldgGrid.getDataPoint(extCoords.x, extCoords.y);
 
-					if( dataPoint.type == 'wall' ) {
-						break;
-					} else {
-						mapAccess.insertDataPointValue(bldgGrid, extCoords.x, extCoords.y, 'type', 'wall');
-						mapAccess.insertDataPointValue(mapGrid, extCoords.x + data.min.x, extCoords.y + data.min.y, 'subtype', 'wall');
+					// Check laterally to ensure that this wall isn't too close to another
+					if( i % 3 == 0 || i == bend.points.length - 1 ) {
+						perpendicularLoop:
+						for(let p = 1; p < 5; p++) {
+							let positiveData = bldgGrid.getDataPoint(extCoords.x + perpendicular.x * p, extCoords.y + perpendicular.y * p);
+							let negativeData = bldgGrid.getDataPoint(extCoords.x + perpendicular.x * -p, extCoords.y + perpendicular.y * -p);
 
+							if( positiveData.type == 'wall' || negativeData.type == 'wall' ) {
+								covered = [];
+								break wallExtensionLoop;
+							}
+						}
+					}
+
+					if( dataPoint.type == 'wall' ) {
+						break wallExtensionLoop;
+					} else {
 						covered.push({x: extCoords.x, y: extCoords.y});
 					}
 				}
+
+				covered.forEach(function(coveredPoint, index) {
+					mapAccess.insertDataPointValue(bldgGrid, coveredPoint.x, coveredPoint.y, 'type', 'wall');
+					mapAccess.insertDataPointValue(mapGrid, coveredPoint.x + data.min.x, coveredPoint.y + data.min.y, 'subtype', 'wall');
+				});
 
 				let tempDoor = covered.random();
 
@@ -450,14 +488,11 @@ module.exports = function(bldgList, mapGrid) {
 				}
 			});
 
-
-
-			// Finally, convert all temporary doors into actual doors
+			// Convert all temporary doors into actual doors
 			bldgGrid.eachDataPoint(function(dataPoint, x, y, self) {
 				if( dataPoint && dataPoint['temp-door'] ) {
 					mapAccess.insertDataPointValue(bldgGrid, x, y, 'temp-door', false);
 					mapAccess.insertDataPointValue(bldgGrid, x, y, 'type', 'floor');
-
 					mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'subtype', 'floor');
 				}
 			});

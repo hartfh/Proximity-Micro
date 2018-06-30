@@ -857,6 +857,7 @@ tilesetToImages('test-wall-face');
 tilesetToImages('test-wall-top');
 tilesetToImages('test-facade');
 tilesetToImages('test-roof');
+tilesetToImages('test-floor');
 tilesetToImages('test-sidewalk');
 
 

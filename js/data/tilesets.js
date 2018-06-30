@@ -173,6 +173,9 @@ module.exports = {
 		end:		[1, 1, 1, 1],
 		pipe:	[1, 1],
 	},
+	'test-floor':		{
+		inside:	[1],
+	},
 	'test-sidewalk':		{
 		bend:	[1, 1, 1, 1],
 		corner:	[1, 1, 1, 1],

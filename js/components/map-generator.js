@@ -1004,7 +1004,10 @@ module.exports = new function() {
 
 		htmlMap = fs.openSync('z_htmlMap.html', 'w');
 
-		fs.writeSync(htmlMap, '<html><header><title>Visual Map</title><style type="text/css">body { width: 3000px; } .box { width: 4px; height: 4px; float: left; }</style></header><body>');
+		const VIS_TILE_SIZE = 4;
+		const CALC_DOC_WIDTH = Constants.MAP_BLOCK_SIZE * Constants.MAP_BLOCK_WIDTH * VIS_TILE_SIZE;
+
+		fs.writeSync(htmlMap, `<html><header><title>Visual Map</title><style type="text/css">body { width: ${CALC_DOC_WIDTH}; } .box { width: ${VIS_TILE_SIZE}px; height: ${VIS_TILE_SIZE}px; float: left; }</style></header><body>`);
 
 		let output = '';
 
@@ -1017,14 +1020,12 @@ module.exports = new function() {
 			if( !point ) {
 				//log('---map rendering issue---');
 			} else {
-				if( dataPoint.color ) {
-					hex = dataPoint.color;
-				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
+				if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
 					hex = '#ffffff';
 				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'roof-top' ) {
 					hex = '#ff7722';
 				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'floor' ) {
-					hex = '#997722';
+					hex = dataPoint.color || '#997722';
 				} else if( dataPoint.highbldg ) {
 					hex = '#ff4433';
 				} else if( dataPoint.medbldg ) {
