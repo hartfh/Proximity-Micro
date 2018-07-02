@@ -351,12 +351,18 @@ module.exports = function(intersectionGrid, mapGrid) {
 					if( data.zone.x ) {
 						mapAccess.insertDataPointValue(mapGrid, stampPoint.x + GRID_X_OFFSET, stampPoint.y + GRID_Y_OFFSET, 'zone', data.zone.x);
 					}
+					if( data.type.x ) {
+						mapAccess.insertDataPointValue(mapGrid, stampPoint.x + GRID_X_OFFSET, stampPoint.y + GRID_Y_OFFSET, 'laneType', data.type.x);
+					}
 				});
 				stampPointsY.forEach(function(stampPoint) {
 					mapAccess.loadMapType(mapGrid, stampPoint.x + GRID_X_OFFSET, stampPoint.y + GRID_Y_OFFSET, 'street');
 
 					if( data.zone.y ) {
 						mapAccess.insertDataPointValue(mapGrid, stampPoint.x + GRID_X_OFFSET, stampPoint.y + GRID_Y_OFFSET, 'zone', data.zone.y);
+					}
+					if( data.type.y ) {
+						mapAccess.insertDataPointValue(mapGrid, stampPoint.x + GRID_X_OFFSET, stampPoint.y + GRID_Y_OFFSET, 'laneType', data.type.y);
 					}
 				});
 

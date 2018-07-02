@@ -32,18 +32,23 @@ function _correctSidewalkDistricts(mapGrid) {
 }
 
 function _correctSidewalkBuildingIDs(mapGrid) {
+	let completed = true;
+
 	mapGrid.eachPoint(function(point, x, y, thisGrid) {
 		if( point ) {
 			let dataPoint = thisGrid.getDataPoint(x, y);
 
 			 if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 ) {
-				 applyDistrictToNeighbors(x, y, dataPoint.buildingID);
+				 if( applyDistrictToNeighbors(x, y, dataPoint.buildingID) ) {
+					 completed = false;
+				 }
 			 }
 		}
 	});
 
 	function applyDistrictToNeighbors(x, y, buildingID, depth = 0) {
 		let testPoints = mapGrid.getOrdinalNeighbors(x, y);
+		let bailed = false;
 
 		mapGrid.withPoints(testPoints, function(nghbrPoint, x, y) {
 			if( !nghbrPoint ) {
@@ -53,14 +58,19 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 			let nghbrDataPoint = mapGrid.getDataPoint(x, y);
 
 			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID ) {
-				if( depth < 1400 ) {
-					//mapAccess.loadMapDistrict(mapGrid, x, y, district);
+				if( depth < 1300 ) {
 					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
 					applyDistrictToNeighbors(x, y, buildingID, depth + 1);
+				} else {
+					bailed = true;
 				}
 			}
 		});
+
+		return bailed;
 	}
+
+	return completed;
 }
 
 module.exports = function(mapGrid) {
@@ -170,8 +180,9 @@ module.exports = function(mapGrid) {
 	*/
 
 	log('building IDs added');
-	_correctSidewalkBuildingIDs(mapGrid);
-	_correctSidewalkBuildingIDs(mapGrid);
+	while( !_correctSidewalkBuildingIDs(mapGrid) ) {
+		log('repeating building ID correction!');
+	}
 	log('building IDs corrected');
 
 	mapGrid.addFilter(function(point, x, y) {

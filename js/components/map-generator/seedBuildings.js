@@ -145,7 +145,6 @@ module.exports = function(bldgList, mapGrid) {
 
 			doors.forEach(function(door) {
 				mapAccess.insertDataPointValue(bldgGrid, door.x, door.y, 'door', true);
-				//bldgGrid.setDataPoint(door.x, door.y, {door: true});
 			});
 
 			return doors;
@@ -212,9 +211,15 @@ module.exports = function(bldgList, mapGrid) {
 					//mapAccess.insertDataPointValue(mapGrid, mapCoords.x, mapCoords.y - 2, 'subtype', 'roof-top');
 					mapAccess.loadMapActorData(mapGrid, mapCoords.x, mapCoords.y - 2, 'test-wall-top', 'doodad', metaPoint);
 
-					let wallFace = false;
+					let wallFace;
 
 					if( metaPoint.type == 'pipe' && metaPoint.rotations == 1 ) {
+						wallFace = true;
+					} else if( metaPoint.type == 'corner' && ( metaPoint.rotations == 0 || metaPoint.rotations == 1 ) ) {
+						wallFace = true;
+					} else if( metaPoint.type == 'tee' && metaPoint.rotations == 0 ) {
+						wallFace = true;
+					} else if( metaPoint.type == 'end' && ( metaPoint.rotations == 1 || metaPoint.rotations == 3 ) ) {
 						wallFace = true;
 					}
 

@@ -46,6 +46,30 @@ module.exports = new function() {
 		applySidewalks(map); log('Sidewalks applied.');
 		seedBuildings(extractBuildingFootprints(map), map); log('Buildings seeded.');
 		seedSidewalks(map); log('Sidewalks seeded.');
+
+
+		// TEMP
+		map.eachDataPoint(function(dataPoint, x, y, self) {
+			if( dataPoint && dataPoint.laneType == 'street' ) {
+				let neighbors = [...self.getOrdinalNeighbors(x, y), ...self.getDiagonalNeighbors(x, y)];
+
+				self.withPoints(neighbors, function(neighborPoint, x, y) {
+					let neighborDataPoint = self.getDataPoint(x, y);
+
+					neighborDataPoint.temp = true;
+				});
+			}
+		});
+		/*
+		map.eachDataPoint(function(dataPoint, x, y, self) {
+			if( dataPoint && dataPoint.temp ) {
+				dataPoint.laneType = 'street';
+				dataPoint.type = '';
+				delete dataPoint.temp;
+			}
+		});
+		*/
+
 		/*
 		applyBuildings(map); log('Buidings seeded.');
 		_seedCrosswalksV7(map); log('Crosswalks seeded.');

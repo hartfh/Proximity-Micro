@@ -197,10 +197,11 @@ module.exports = {
 	},
 	'test-wall-top':	{
 		corner:	[1, 1, 1, 1],
+		cross:	[1],
 		edge:	[1, 1, 1, 1],
 		elbow:	[1, 1, 1, 1],
 		end:		[1, 1, 1, 1],
 		pipe:	[1, 1],
-		//tee:	[1, 1, 1, 1],
+		tee:		[1, 1, 1, 1],
 	},
 };

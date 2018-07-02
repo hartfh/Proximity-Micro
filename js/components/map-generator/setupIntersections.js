@@ -47,7 +47,7 @@ module.exports = function(intersectionGrid, config = {}) {
 		const CHANCE_TO_BEND	= config.chanceBend || 0.87;
 		const EDGE_DELETE_CHANCE	= 0.5;
 		const WIDE_DELETE_CHANCE	= 0.08;
-		const MODIFIER_RANGE	= config.range || 0.4;
+		const MODIFIER_RANGE	= config.range || 0.3;
 		const ZONE_CHANCE		= 0.25;
 		const ZONES			= ['blockade'];
 		const OFFSET_RANGE		= 0.4;
@@ -58,6 +58,9 @@ module.exports = function(intersectionGrid, config = {}) {
 		let yOffset	= 0;
 		let xZone		= false;
 		let yZone		= false;
+
+		let xType		= false;
+		let yType		= false;
 
 		if( Math.random() < CHANCE_TO_OFFSET ) {
 			xModifier	= Math.random() * MODIFIER_RANGE;
@@ -76,6 +79,12 @@ module.exports = function(intersectionGrid, config = {}) {
 			if( Math.random() < ZONE_CHANCE ) {
 				yZone = ZONES.random();
 			}
+		}
+		if( x % 3 == 0 ) {
+			yType = 'street';
+		}
+		if( y % 2 == 0 ) {
+			xType = 'street';
 		}
 
 		var data = {
@@ -98,6 +107,10 @@ module.exports = function(intersectionGrid, config = {}) {
 			straight:	{
 				x:	Math.random() > CHANCE_TO_BEND,
 				y:	Math.random() > CHANCE_TO_BEND,
+			},
+			type:	{
+				x:	xType,
+				y:	yType,
 			},
 			width:	{
 				x:	widthTable.x[y],
@@ -126,6 +139,13 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 		if( data.empty.y ) {
 			data.zone.y = false;
+		}
+
+		if( data.type.x == 'street' ) {
+			data.straight.x = false;
+		}
+		if( data.type.y == 'street' ) {
+			data.straight.y = false;
 		}
 
 		self.setPoint(x, y, 1);
