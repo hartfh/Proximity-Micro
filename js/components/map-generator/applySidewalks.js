@@ -38,7 +38,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 		if( point ) {
 			let dataPoint = thisGrid.getDataPoint(x, y);
 
-			 if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 ) {
+			 if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 && !dataPoint.laneType ) {
 				 if( applyDistrictToNeighbors(x, y, dataPoint.buildingID) ) {
 					 completed = false;
 				 }
@@ -57,7 +57,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 
 			let nghbrDataPoint = mapGrid.getDataPoint(x, y);
 
-			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID ) {
+			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID && !nghbrDataPoint.laneType ) {
 				if( depth < 1300 ) {
 					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
 					applyDistrictToNeighbors(x, y, buildingID, depth + 1);
@@ -76,9 +76,22 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 module.exports = function(mapGrid) {
 	// Fill anything in that isn't a street
 	mapGrid.eachPoint(function(point, x, y, self) {
+		/*
 		if( !point ) {
 			mapAccess.loadMapType(mapGrid, x, y, 'sidewalk');
 			mapGrid.setPoint(x, y, 1);
+		}
+		*/
+
+		if( !point ) {
+			mapAccess.insertDataPointValue(mapGrid, x, y, 'type', 'sidewalk');
+			mapGrid.setPoint(x, y, 1);
+		}
+
+		let dataPoint = self.getDataPoint(x, y);
+
+		if( dataPoint.type == 'lane' && dataPoint.laneType == 'sidewalk' ) {
+			dataPoint.type = 'sidewalk';
 		}
 	});
 

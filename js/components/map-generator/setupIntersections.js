@@ -18,7 +18,8 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 
 		// TEMP:
-		width = 3;
+		//width = 3;
+		width = 1;
 
 		widthTable.x.push(width);
 	}
@@ -36,21 +37,25 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 
 		// TEMP:
-		width = 3;
+		//width = 3;
+		width = 1;
 
 		widthTable.y.push(width);
 	}
 
 	intersectionGrid.eachPoint(function(point, x, y, self) {
-		const CHANCE_TO_OFFSET	= config.chanceOffset || 0.85;
-		const CHANCE_TO_DELETE	= config.chanceDelete || 0.2;
-		const CHANCE_TO_BEND	= config.chanceBend || 0.87;
+		//const CHANCE_TO_OFFSET	= config.chanceOffset || 0.85;
+		const CHANCE_TO_OFFSET	= 0;
+		//const CHANCE_TO_DELETE	= config.chanceDelete || 0.2;
+		const CHANCE_TO_DELETE	= 0;
+		//const CHANCE_TO_BEND	= config.chanceBend || 0.75;
+		const CHANCE_TO_BEND	= 0;
 		const EDGE_DELETE_CHANCE	= 0.5;
 		const WIDE_DELETE_CHANCE	= 0.08;
 		const MODIFIER_RANGE	= config.range || 0.3;
 		const ZONE_CHANCE		= 0.25;
 		const ZONES			= ['blockade'];
-		const OFFSET_RANGE		= 0.4;
+		const OFFSET_RANGE		= 0.25;
 
 		let xModifier	= 0;
 		let yModifier	= 0;
@@ -82,10 +87,17 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 		if( x % 3 == 0 ) {
 			yType = 'street';
+		} else {
+			yType = 'sidewalk';
 		}
 		if( y % 2 == 0 ) {
 			xType = 'street';
+		} else {
+			xType = 'sidewalk';
 		}
+		xType = 'street';
+		yType = 'sidewalk';
+
 
 		var data = {
 			offset:	{
@@ -142,10 +154,12 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 
 		if( data.type.x == 'street' ) {
-			data.straight.x = false;
+			//data.straight.x = false;
+			//data.width.x = 2;
 		}
 		if( data.type.y == 'street' ) {
-			data.straight.y = false;
+			//data.straight.y = false;
+			//data.width.y = 2;
 		}
 
 		self.setPoint(x, y, 1);

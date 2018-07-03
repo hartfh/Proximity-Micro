@@ -2,7 +2,8 @@ let fs = require('fs');
 let Tilesets = require('../data/tilesets');
 let Building = require('../classes/Building');
 let setupIntersections = require('./map-generator/setupIntersections');
-let applyStreets = require('./map-generator/applyStreets');
+let applyLanes = require('./map-generator/applyLanes');
+//let applyLanes = require('./map-generator/applyLanes2');
 let applySidewalks = require('./map-generator/applySidewalks');
 let applyBuildings = require('./map-generator/applyBuildings');
 let extractBuildingFootprints = require('./map-generator/extractBuildingFootprints');
@@ -42,13 +43,10 @@ module.exports = new function() {
 
 		setupIntersections(intersectionGrid); log('Intersections setup.');
 		//setupIntersections(trussGrid, {range: 0.85, zones: false});
-		applyStreets(intersectionGrid, map); log('Streets applied');
-		applySidewalks(map); log('Sidewalks applied.');
-		seedBuildings(extractBuildingFootprints(map), map); log('Buildings seeded.');
-		seedSidewalks(map); log('Sidewalks seeded.');
-
+		applyLanes(intersectionGrid, map); log('Streets applied');
 
 		// TEMP
+		/*
 		map.eachDataPoint(function(dataPoint, x, y, self) {
 			if( dataPoint && dataPoint.laneType == 'street' ) {
 				let neighbors = [...self.getOrdinalNeighbors(x, y), ...self.getDiagonalNeighbors(x, y)];
@@ -60,15 +58,25 @@ module.exports = new function() {
 				});
 			}
 		});
-		/*
 		map.eachDataPoint(function(dataPoint, x, y, self) {
 			if( dataPoint && dataPoint.temp ) {
 				dataPoint.laneType = 'street';
-				dataPoint.type = '';
+				dataPoint.type = 'street';
 				delete dataPoint.temp;
 			}
 		});
 		*/
+		map.eachDataPoint(function(dataPoint, x, y, self) {
+			if( dataPoint && dataPoint.laneType == 'street' ) {
+				dataPoint.type = 'street';
+				//delete dataPoint.laneType;
+			}
+		});
+
+
+		applySidewalks(map); log('Sidewalks applied.');
+		seedBuildings(extractBuildingFootprints(map), map); log('Buildings seeded.');
+		seedSidewalks(map); log('Sidewalks seeded.');
 
 		/*
 		applyBuildings(map); log('Buidings seeded.');

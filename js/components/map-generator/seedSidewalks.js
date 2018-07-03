@@ -1,6 +1,7 @@
 let mapAccess = require('./map-access');
 
 module.exports = function(mapGrid) {
+	/*
 	///// TEMPORARY
 	mapGrid.eachPoint(function(point, x, y, self) {
 		if( point ) {
@@ -11,6 +12,7 @@ module.exports = function(mapGrid) {
 			}
 		}
 	});
+	*/
 
 	// Seed actors
 	mapGrid.addFilter(function(point, x, y) {
