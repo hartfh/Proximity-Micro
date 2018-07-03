@@ -44,14 +44,16 @@ module.exports = function(intersectionGrid, config = {}) {
 	}
 
 	intersectionGrid.eachPoint(function(point, x, y, self) {
-		//const CHANCE_TO_OFFSET	= config.chanceOffset || 0.85;
-		const CHANCE_TO_OFFSET	= 0;
-		//const CHANCE_TO_DELETE	= config.chanceDelete || 0.2;
-		const CHANCE_TO_DELETE	= 0;
-		//const CHANCE_TO_BEND	= config.chanceBend || 0.75;
-		const CHANCE_TO_BEND	= 0;
-		const EDGE_DELETE_CHANCE	= 0.5;
-		const WIDE_DELETE_CHANCE	= 0.08;
+		const CHANCE_TO_OFFSET	= config.chanceOffset || 0.85;
+		//const CHANCE_TO_OFFSET	= 0;
+		const CHANCE_TO_DELETE	= config.chanceDelete || 0.2;
+		//const CHANCE_TO_DELETE	= 0;
+		const CHANCE_TO_BEND	= config.chanceBend || 0.75;
+		//const CHANCE_TO_BEND	= 0;
+		//const EDGE_DELETE_CHANCE	= 0.5;
+		//const WIDE_DELETE_CHANCE	= 0.06;
+		const EDGE_DELETE_CHANCE	= 0;
+		const WIDE_DELETE_CHANCE	= 0;
 		const MODIFIER_RANGE	= config.range || 0.3;
 		const ZONE_CHANCE		= 0.25;
 		const ZONES			= ['blockade'];
@@ -95,9 +97,8 @@ module.exports = function(intersectionGrid, config = {}) {
 		} else {
 			xType = 'sidewalk';
 		}
-		xType = 'street';
-		yType = 'sidewalk';
-
+		//xType = 'street';
+		//yType = 'sidewalk';
 
 		var data = {
 			offset:	{
@@ -154,12 +155,10 @@ module.exports = function(intersectionGrid, config = {}) {
 		}
 
 		if( data.type.x == 'street' ) {
-			//data.straight.x = false;
-			//data.width.x = 2;
+			data.empty.x = false;
 		}
 		if( data.type.y == 'street' ) {
-			//data.straight.y = false;
-			//data.width.y = 2;
+			data.empty.y = false;
 		}
 
 		self.setPoint(x, y, 1);

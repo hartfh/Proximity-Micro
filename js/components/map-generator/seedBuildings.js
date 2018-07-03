@@ -39,7 +39,7 @@ module.exports = function(bldgList, mapGrid) {
 
 		function shrinkFootprint() {
 			// Reduce by two tiles
-			for(let i = 0; i < 2; i++) {
+			for(let i = 0; i < 3; i++) {
 				bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
 					if( point ) {
 						let metaPoint = self.getMetaPoint(x, y);

@@ -43,22 +43,18 @@ module.exports = function(intersectionGrid, mapGrid) {
 				rightDistY = rightNghbrData.base.y - data.base.y;
 
 				// Connect nearby points if they'd be extremely close
-				/*
 				if( data.straight.x && Math.abs(rightDistY) < 4 ) {
 					data.straight.x = false;
 				}
-				*/
 			}
 			if( downNghbrData ) {
 				downDistX = downNghbrData.base.x - data.base.x;
 				downDistY = downNghbrData.base.y - data.base.y;
 
 				// Connect nearby points if they'd be extremely close
-				/*
 				if( data.straight.y && Math.abs(downDistX) < 4 ) {
 					data.straight.y = false;
 				}
-				*/
 			}
 
 			if( !data.empty.x ) {

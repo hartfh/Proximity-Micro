@@ -32,23 +32,30 @@ function _correctSidewalkDistricts(mapGrid) {
 }
 
 function _correctSidewalkBuildingIDs(mapGrid) {
-	let completed = true;
-
 	mapGrid.eachPoint(function(point, x, y, thisGrid) {
 		if( point ) {
 			let dataPoint = thisGrid.getDataPoint(x, y);
 
-			 if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 && !dataPoint.laneType ) {
-				 if( applyDistrictToNeighbors(x, y, dataPoint.buildingID) ) {
-					 completed = false;
-				 }
-			 }
+			if( dataPoint.type == 'sidewalk' && dataPoint.buildingID != 0 && !dataPoint.laneType ) {
+				let checkX = x;
+				let checkY = y;
+				let result = true;
+
+				while( result ) {
+					result = applyDistrictToNeighbors(checkX, checkY, dataPoint.buildingID);
+
+					if( result ) {
+						checkX = result.x;
+						checkY = result.y;
+					}
+				}
+			}
 		}
 	});
 
-	function applyDistrictToNeighbors(x, y, buildingID, depth = 0) {
-		let testPoints = mapGrid.getOrdinalNeighbors(x, y);
-		let bailed = false;
+	function applyDistrictToNeighbors(testX, testY, buildingID, depth = 0) {
+		let testPoints = mapGrid.getOrdinalNeighbors(testX, testY);
+		let bailed;
 
 		mapGrid.withPoints(testPoints, function(nghbrPoint, x, y) {
 			if( !nghbrPoint ) {
@@ -58,19 +65,17 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 			let nghbrDataPoint = mapGrid.getDataPoint(x, y);
 
 			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID && !nghbrDataPoint.laneType ) {
-				if( depth < 1300 ) {
+				try {
 					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
-					applyDistrictToNeighbors(x, y, buildingID, depth + 1);
-				} else {
-					bailed = true;
+					bailed = applyDistrictToNeighbors(x, y, buildingID, depth + 1);
+				} catch(err) {
+					bailed = {x: testX, y: testY};
 				}
 			}
 		});
 
 		return bailed;
 	}
-
-	return completed;
 }
 
 module.exports = function(mapGrid) {
@@ -193,9 +198,12 @@ module.exports = function(mapGrid) {
 	*/
 
 	log('building IDs added');
+	/*
 	while( !_correctSidewalkBuildingIDs(mapGrid) ) {
 		log('repeating building ID correction!');
 	}
+	*/
+	_correctSidewalkBuildingIDs(mapGrid)
 	log('building IDs corrected');
 
 	mapGrid.addFilter(function(point, x, y) {
