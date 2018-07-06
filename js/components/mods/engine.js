@@ -19,6 +19,8 @@ module.exports = function() {
 	        delta = delta || 1000 / 60;
 	        correction = correction || 1;
 
+		   engine.frameCounter++;
+
 	        var world = engine.world,
 	            timing = engine.timing,
 	            broadphase = engine.broadphase,

@@ -41,8 +41,8 @@ var _receiveRequest = function(event, data) {
 			_returnRequest({tiles: tiles, taskID: data.taskID});
 			break;
 		case 'get-profiles': // Blocking
-			var profiles = MapManager.getProfiles(data.tiles, data.layer);
-			_returnRequest({profiles: profiles, taskID: data.taskID});
+			var tiledata = MapManager.getProfiles(data.tiles, data.layer);
+			_returnRequest({profiles: tiledata.profiles, insides: tiledata.insides, taskID: data.taskID});
 			break;
 		case 'set-profiles':
 			MapManager.setProfiles(data.profiles);

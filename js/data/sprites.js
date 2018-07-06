@@ -378,6 +378,7 @@ module.exports = function() {
 			},
 			ticksPerFrame:	25,
 			silhouette:	true,
+			independent:	true,
 			//opacity:	1,
 			//mode:		'overlay',
 			effects:		{
@@ -397,6 +398,7 @@ module.exports = function() {
 				//e:		{frames: ['']},
 			},
 			silhouette:	true,
+			independent:	true,
 		},
 		'moving':	{
 			spriteFrames:		{
@@ -411,6 +413,7 @@ module.exports = function() {
 			},
 			ticksPerFrame:	11,
 			silhouette:	true,
+			independent:	true,
 		}
 	};
 

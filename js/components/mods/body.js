@@ -161,6 +161,7 @@ module.exports = function(bodyModule) {
 				mode:			modeData.mode || 'source-over',
 				effects:			modeData.effects || {},
 				silhouette:		modeData.silhouette || false,
+				independent:		modeData.independent || false,
 			};
 		}
 	};
@@ -211,10 +212,24 @@ module.exports = function(bodyModule) {
 			EffectsFactory.create(effectData.effect, position.x, position.y, sound);
 		}
 
-		frames.tickCount++;
+		let cycleFrames = false;
 
-		if( frames.tickCount >= frames[spriteMode].ticksPerFrame || refresh ) {
-			frames.tickCount = 1;
+		if( frames[spriteMode].independent ) {
+			frames.tickCount++;
+
+			if( frames.tickCount >= frames[spriteMode].ticksPerFrame ) {
+				cycleFrames = true;
+			}
+		} else {
+			if( Game.Engine.frameCounter % frames[spriteMode].ticksPerFrame == 0 ) {
+				cycleFrames = true;
+			}
+		}
+
+		if( cycleFrames || refresh ) {
+			if( frames[spriteMode].independent ) {
+				frames.tickCount = 1;
+			}
 
 			// Move frames forward or backward by one
 			if( reversed ) {

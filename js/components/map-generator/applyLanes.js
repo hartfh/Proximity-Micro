@@ -12,7 +12,7 @@ module.exports = function(intersectionGrid, mapGrid) {
 		let stampPointsY	= [];
 
 		// Find top-left corner to insert building ID value
-		let cornerOffset = {x: 2, y: 2}; // {x: 1, y: 1}
+		let cornerOffset = {x: 3, y: 3}; // {x: 1, y: 1}
 
 		if( data.width.y > 1 ) {
 			cornerOffset.x++;

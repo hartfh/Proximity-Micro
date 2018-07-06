@@ -414,7 +414,10 @@ module.exports = function() {
 					}
 					*/
 					if( Matter.Bounds.overlaps(body.bounds, {min: {x: render.bounds.min.x - 0, y: render.bounds.min.y - 0}, max: {x: render.bounds.max.x + 0, y: render.bounds.max.y + 0}}) ) {
-						bodies.push(body);
+						if( body.surroundings == Game.State.surroundings || body.surroundings == 'exempt' ) {
+							bodies.push(body);
+						}
+						//bodies.push(body);
 					}
 					// TODO: do a check if body overlaps small reigon around player, and if so add into separate array
 						// Those bodies will then get redrawn with an inverted clipping mask in place, at half normal opacity

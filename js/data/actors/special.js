@@ -13,7 +13,7 @@ var textExemplar = {
 	body:		{
 		parts:	{
 			structures:	[
-				{shape: 'rectangle', x: 0, y: 0, width: 10, height: 10, options: {density: 1}}
+				{shape: 'rectangle', x: 0, y: 0, width: 10, height: 10, options: {density: 1}, surroundings: 'exempt'}
 			],
 			sensors:		[],
 			ornaments:	[]
@@ -52,11 +52,12 @@ special['cursor'] = {
 		parts:	{
 			structures:	[
 				{
-					x:		0,
-					y:		0,
-					width:	26,
-					height:	26,
-					shape:	'rectangle',
+					x:			0,
+					y:			0,
+					width:		26,
+					height:		26,
+					shape:		'rectangle',
+					surroundings:	'exempt',
 					//sprite:	'vendorOne'
 				}
 			],

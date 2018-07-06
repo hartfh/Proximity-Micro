@@ -83,12 +83,13 @@ var Game = {
 		slotID:			false,
 		summary:			{},
 		summaries:		{},
+		surroundings:		'outside',
 		viewport:			{
 			corner:	{x: 0, y: 0},
 			height:	Constants.VPORT_HEIGHT,
 			width:	Constants.VPORT_WIDTH,
 			position:	{x: 0, y: 0}, // center point
-		}
+		},
 	},
 	TaskManager:		TaskManager,
 	Textures:			{},

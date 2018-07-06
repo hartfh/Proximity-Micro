@@ -103,6 +103,7 @@ module.exports = new function() {
 			buildingID:	false,
 			density:		'low',
 			district:		0,
+			inside:		false,
 			solid:		false,
 			subtype:		false,
 			temp:		false,
@@ -137,6 +138,7 @@ module.exports = new function() {
 				d:		data.actorData.d,
 				o:		data.actorData.o,
 				dist:	data.district,
+				i:		data.inside,
 				type:	data.type,
 				subtype:	data.subtype,
 			};
@@ -1038,10 +1040,14 @@ module.exports = new function() {
 
 		const VIS_TILE_SIZE = 4;
 		const CALC_DOC_WIDTH = Constants.MAP_BLOCK_SIZE * Constants.MAP_BLOCK_WIDTH * VIS_TILE_SIZE;
+		const CALC_DOC_HEIGHT = Constants.MAP_BLOCK_SIZE * Constants.MAP_BLOCK_HEIGHT * VIS_TILE_SIZE;
 
 		fs.writeSync(htmlMap, `<html><header><title>Visual Map</title><style type="text/css">body { width: ${CALC_DOC_WIDTH}; } .box { width: ${VIS_TILE_SIZE}px; height: ${VIS_TILE_SIZE}px; float: left; }</style></header><body>`);
+		fs.writeSync(htmlMap, `<canvas id="canvas" width="${CALC_DOC_WIDTH}" height="${CALC_DOC_HEIGHT}"></canvas>`);
+		fs.writeSync(htmlMap, '<script type="text/javascript">');
 
 		let output = '';
+		let varData = '';
 
 		map.eachPoint(function(point, x, y, thisGrid) {
 			let hex = '';
@@ -1148,12 +1154,24 @@ module.exports = new function() {
 			}
 
 			output += '<div class="box" style="background: ' + hex + ';"></div>';
+			varData += `{'color': '${hex}', x: ${x}, y: ${y}},`;
 
 			if( x == dims.width - 1 ) {
-				fs.writeSync(htmlMap, output + '<div style="float:left;clear:both;height:0;width:0;"></div>');
+				//fs.writeSync(htmlMap, output + '<div style="float:left;clear:both;height:0;width:0;"></div>');
 				output = '';
 			}
 		});
+
+		fs.writeSync(htmlMap, `var data = [${varData}];`);
+		fs.writeSync(htmlMap, `var tilesSize = [${VIS_TILE_SIZE}];`);
+		fs.writeSync(htmlMap, `var tilesWide = [${Constants.MAP_BLOCK_WIDTH}];`);
+		fs.writeSync(htmlMap, `var tilesHigh = [${Constants.MAP_BLOCK_HEIGHT}];`);
+		fs.writeSync(htmlMap, "(function() {");
+		fs.writeSync(htmlMap, "var canvasElem = document.getElementById('canvas');");
+		fs.writeSync(htmlMap, "var context = canvasElem.getContext('2d');");
+		fs.writeSync(htmlMap, "data.forEach(function(datum) { context.fillStyle = datum.color; context.fillRect(datum.x * tilesSize, datum.y * tilesSize, tilesSize, tilesSize); });");
+		fs.writeSync(htmlMap, "}());");
+		fs.writeSync(htmlMap, '</script>');
 
 		fs.writeSync(htmlMap, '</body></html>');
 		fs.closeSync(htmlMap);

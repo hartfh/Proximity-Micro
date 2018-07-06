@@ -129,6 +129,12 @@ module.exports = new function() {
 		}
 
 		if( body ) {
+			if( Game.MapGrid.isPointInside(mapGridCoords) ) {
+				body.parts.forEach(function(part) {
+					part.surroundings = 'inside';
+				});
+			}
+
 			Game.World.add(body);
 		}
 	};

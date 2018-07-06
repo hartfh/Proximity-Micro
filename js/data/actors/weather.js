@@ -25,6 +25,7 @@ weather['rain'] = {
 						density:	2
 					},
 					sprite:	'rain-drop',
+					surroundings:	'outside',
 				}
 			],
 			sensors:		[],
@@ -71,6 +72,7 @@ weather['snow-light'] = {
 						density:		6
 					},
 					sprite:	'snow-flake',
+					surroundings:	'outside',
 				}
 			],
 			sensors:		[],
@@ -104,6 +106,7 @@ weather['haze-test-1'] = {
 					x: 0,
 					y: 0,
 					sprite:	'haze-test-1',
+					surroundings:	'outside',
 				}
 			],
 			sensors:		[],

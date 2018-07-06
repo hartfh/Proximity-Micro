@@ -66,19 +66,22 @@ module.exports = function() {
 	};
 
 	_self.getProfiles = function(tiles = [], layer = 0) {
-		var profiles = [];
+		let profiles	= [];
+		let insides	= [];
 
 		for(var tile of tiles) {
 			var point			= _map.getPoint(tile.x, tile.y);
 			var tileProfiles	= [];
 
+			insides.push({x: tile.x, y: tile.y, inside: point.inside});
+
 			switch(layer) {
 				case 1:
-					tileProfiles = point.p1;
+					tileProfiles = point.actors.p1;
 					break;
 				case 0:
 				default:
-					tileProfiles = [...point.c, ...point.t, ...point.d, ...point.o];
+					tileProfiles = [...point.actors.c, ...point.actors.t, ...point.actors.d, ...point.actors.o];
 					break;
 			}
 
@@ -87,14 +90,14 @@ module.exports = function() {
 			}
 
 			// Clear out point's character data if any exists
-			if( point.c.length > 0 ) {
-				point.c = [];
+			if( point.actors.c.length > 0 ) {
+				point.actors.c = [];
 
 				_map.setPoint(tile.x, tile.y, point);
 			}
 		}
 
-		return profiles;
+		return {profiles: profiles, insides: insides};
 	};
 
 	_self.setProfiles = function(profiles = []) {
@@ -293,8 +296,12 @@ module.exports = function() {
 					d:	tile.d,
 					o:	tile.o,
 				};
+				let data = {
+					actors: actors,
+					inside: tile.i,
+				};
 
-				_map.setPoint(tile.x, tile.y, actors);
+				_map.setPoint(tile.x, tile.y, data);
 			}
 
 			doc = null; // free up memory

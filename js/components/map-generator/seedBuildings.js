@@ -18,6 +18,7 @@ module.exports = function(bldgList, mapGrid) {
 		data.points.forEach(function(point, index) {
 			bldgGrid.setPoint(point.x - data.min.x, point.y - data.min.y, 1);
 			bldgGrid.setDataPoint(point.x - data.min.x, point.y - data.min.y, {});
+			mapAccess.insertDataPointValue(mapGrid, point.x, point.y, 'inside', true);
 		});
 
 		// TODO: figure out location of 1+ doors. Or 0 if points.length is sufficiently small
@@ -38,7 +39,7 @@ module.exports = function(bldgList, mapGrid) {
 		applyColoring();
 
 		function shrinkFootprint() {
-			// Reduce by two tiles
+			// Reduce by three tiles
 			for(let i = 0; i < 3; i++) {
 				bldgGrid.setHexValues().eachPoint(function(point, x, y, self) {
 					if( point ) {
@@ -46,6 +47,8 @@ module.exports = function(bldgList, mapGrid) {
 
 						if( metaPoint.type != 'inside' ) {
 							self.setPoint(x, y, 0);
+
+							mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'inside', false);
 						}
 					}
 				});

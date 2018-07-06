@@ -7,6 +7,7 @@ module.exports = new function() {
 
 	_self.init = function() {
 		_self.engine = Matter.Engine.create();
+		_self.engine.frameCounter = 1;
 		_self.runner = Matter.Runner.create();
 		_self.render = _createRenderer();
 

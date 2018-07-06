@@ -86,7 +86,11 @@ module.exports = new function() {
 		CONTENT_KEY[data.name] = data;
 	}
 
-	var _init = function() {};
+	var _init = function() {
+		_grid.eachPoint(function(point, x, y, self) {
+			self.setPoint(x, y, {s: '0', m: '0', n: '0', inside: false, id: false});
+		});
+	};
 
 	_self.start = function(saveData) {
 		if( saveData ) {
@@ -120,12 +124,13 @@ module.exports = new function() {
 				value += content.s || '0';
 				value += content.m || '0';
 				value += content.n || '0';
+				value += (content.inside) ? 'i' : 'o';
 
 				value = value.replace('X', '0'); // remove any temporary values
 
 				serialized.push(value);
 			} else {
-				serialized.push('000');
+				serialized.push('000o');
 			}
 		});
 
@@ -144,10 +149,10 @@ module.exports = new function() {
 			var x = index % gridDimensions.width;
 			var y = Math.floor( index / gridDimensions.width );
 
-			if( value == '000' ) {
+			if( value == '000o' ) {
 				_grid.setPoint(x, y, 0);
 			} else {
-				_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], id: false});
+				_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
 			}
 		}
 	}
@@ -349,6 +354,13 @@ module.exports = new function() {
 				console.log(`shifting to: ${latest.x} ${latest.y}`);
 
 				body.mapgrid = {x: latest.x, y: latest.y};
+
+				// EXPERIMENTAL:
+				const INSIDE = _self.isPointInside(latest);
+
+				body.parts.forEach(function(part) {
+					part.surroundings = (INSIDE) ? 'inside' : 'outside';
+				});
 			}
 		}, 'mapgrid-body-tracking-' + body.id);
 	};
@@ -552,6 +564,24 @@ module.exports = new function() {
 		_grid.eachPoint(function(point, x, y) {
 			callback(point, x, y);
 		});
+	};
+
+	_self.setPointAsInside = function(mapCoords) {
+		let point = _grid.getPoint(mapCoords.x, mapCoords.y);
+
+		if( point ) {
+			point.inside = true;
+		}
+	};
+
+	_self.isPointInside = function(mapCoords) {
+		let point = _grid.getPoint(mapCoords.x, mapCoords.y);
+
+		if( point && point.inside ) {
+			return true;
+		}
+
+		return false;
 	};
 
 	/**
