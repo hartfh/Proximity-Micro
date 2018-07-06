@@ -50,9 +50,12 @@ module.exports = new function() {
 
 		Matter.Body.setParts(_composite, parts);
 
+		/*
 		_composite.parts.forEach(function(part) {
 			part.surroundings = 'exempt';
 		});
+		*/
+		_composite.surroundings = 'outside';
 
 		// Apply custom body properties
 		for(var prop in customProps) {
@@ -83,6 +86,9 @@ module.exports = new function() {
 					for(var option in customOptions) {
 						_composite[option] = customOptions[option];
 					}
+					break;
+				case 'surroundings':
+					_composite.surroundings = customProps[prop];
 					break;
 				default:
 					break;
@@ -134,7 +140,6 @@ module.exports = new function() {
 		_addPartName(part, config.name);
 
 		part.partType = 'sensor';
-		part.surroundings = config.surroundings || 'outside';
 		part.effect = config.effect || false;
 		part.disabled = (config.disabled) ? config.disabled : false;
 
@@ -530,7 +535,6 @@ module.exports = new function() {
 		_addPartName(part, config.name);
 
 		part.partType = 'structure';
-		part.surroundings = config.surroundings || 'outside';
 
 		part.render.opacity = 0.20;
 		part.render.opacity = 1.0;
@@ -556,7 +560,6 @@ module.exports = new function() {
 
 		part.isSensor = true;
 		part.partType = 'ornament';
-		part.surroundings = config.surroundings || 'outside';
 
 		return part;
 	};

@@ -42,7 +42,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 				let result = true;
 
 				while( result ) {
-					result = applyDistrictToNeighbors(checkX, checkY, dataPoint.buildingID);
+					result = applyIDToNeighbors(checkX, checkY, dataPoint.buildingID);
 
 					if( result ) {
 						checkX = result.x;
@@ -53,7 +53,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 		}
 	});
 
-	function applyDistrictToNeighbors(testX, testY, buildingID, depth = 0) {
+	function applyIDToNeighbors(testX, testY, buildingID) {
 		let testPoints = mapGrid.getOrdinalNeighbors(testX, testY);
 		let bailed;
 
@@ -67,7 +67,7 @@ function _correctSidewalkBuildingIDs(mapGrid) {
 			if( nghbrDataPoint && nghbrDataPoint.type == 'sidewalk' && nghbrDataPoint.buildingID != buildingID && !nghbrDataPoint.laneType ) {
 				try {
 					mapAccess.insertDataPointValue(mapGrid, x, y, 'buildingID', buildingID);
-					bailed = applyDistrictToNeighbors(x, y, buildingID, depth + 1);
+					bailed = applyIDToNeighbors(x, y, buildingID);
 				} catch(err) {
 					bailed = {x: testX, y: testY};
 				}

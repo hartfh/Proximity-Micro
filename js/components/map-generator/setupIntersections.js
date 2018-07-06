@@ -48,8 +48,8 @@ module.exports = function(intersectionGrid, config = {}) {
 		//const CHANCE_TO_OFFSET	= 0;
 		const CHANCE_TO_DELETE	= config.chanceDelete || 0.2;
 		//const CHANCE_TO_DELETE	= 0;
-		const CHANCE_TO_BEND	= config.chanceBend || 0.75;
-		//const CHANCE_TO_BEND	= 0;
+		//const CHANCE_TO_BEND	= config.chanceBend || 0.75;
+		const CHANCE_TO_BEND	= 1.0;
 		//const EDGE_DELETE_CHANCE	= 0.5;
 		//const WIDE_DELETE_CHANCE	= 0.06;
 		const EDGE_DELETE_CHANCE	= 0;

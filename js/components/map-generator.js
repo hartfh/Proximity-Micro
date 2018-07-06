@@ -3,12 +3,12 @@ let Tilesets = require('../data/tilesets');
 let Building = require('../classes/Building');
 let setupIntersections = require('./map-generator/setupIntersections');
 let applyLanes = require('./map-generator/applyLanes');
-//let applyLanes = require('./map-generator/applyLanes2');
 let applySidewalks = require('./map-generator/applySidewalks');
 let applyBuildings = require('./map-generator/applyBuildings');
 let extractBuildingFootprints = require('./map-generator/extractBuildingFootprints');
 let seedBuildings = require('./map-generator/seedBuildings');
 let seedSidewalks = require('./map-generator/seedSidewalks');
+let mapAccess = require('./map-generator/map-access');
 
 module.exports = new function() {
 	let _self = this;
@@ -26,14 +26,14 @@ module.exports = new function() {
 
 		map = new Grid(mapWidth, mapHeight, mapArgs);
 
-		_setupActorData(map); log('Actor data setup.');
+		mapAccess.setupActorData(map); log('Actor data setup.');
 
 		if( type != 'blank' ) {
 			_populateShell(map); log('populations done');
 			_printMap(map);
 		}
 
-		_finalizeActorData(map); log('Actor data finalized.');
+		mapAccess.finalizeActorData(map); log('Actor data finalized.');
 
 		return map;
 	};
@@ -88,67 +88,6 @@ module.exports = new function() {
 		_seedBlockadesV7(map); log('Bockades added.')
 		_seedSidewalkInfrastructure(map); log('Sidewalk infrastructure added.');
 		*/
-	}
-
-	function _getDataPointExemplar(x, y) {
-		return {
-			actorData:	{
-				'x':		x,	// area X coordinate
-				'y':		y,	// area Y coordinate
-				't':		[],	// terrain
-				'c':		[],	// characters
-				'd':		[],	// doodads
-				'o':		[],	// obstacles
-			},
-			buildingID:	false,
-			density:		'low',
-			district:		0,
-			inside:		false,
-			solid:		false,
-			subtype:		false,
-			temp:		false,
-			truss:		false,
-			type:		false,
-			zone:		false,
-		};
-	}
-
-	function _setupActorData(grid) {
-		// Stores data about actors, terrain and tile coordinates
-		grid.eachDataPoint(function(dataPoint, x, y) {
-			if( !dataPoint ) {
-				dataPoint = _getDataPointExemplar(x, y);
-			}
-
-			grid.setDataPoint(x, y, dataPoint);
-		});
-
-		return grid;
-	}
-
-	// Copies actor data from a property of a data point into the primary point value
-	function _finalizeActorData(grid) {
-		grid.eachDataPoint(function(data, x, y) {
-			// Setup finalized data to be loaded into the saved map grid
-			var finalized = {
-				x:		x,
-				y:		y,
-				t:		data.actorData.t,
-				c:		data.actorData.c,
-				d:		data.actorData.d,
-				o:		data.actorData.o,
-				dist:	data.district,
-				i:		data.inside,
-				type:	data.type,
-				subtype:	data.subtype,
-			};
-
-			grid.setPoint(x, y, finalized);
-			grid.setDataPoint(x, y, null);
-			grid.setMetaPoint(x, y, null);
-		});
-
-		return grid;
 	}
 
 	function _seedCrosswalksV7(mapGrid) {
@@ -1058,7 +997,9 @@ module.exports = new function() {
 			if( !point ) {
 				//log('---map rendering issue---');
 			} else {
-				if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
+				if( dataPoint.inside && false ) {
+					hex = '#440000';
+				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'wall' ) {
 					hex = '#ffffff';
 				} else if( dataPoint.type == 'building' && dataPoint.subtype == 'roof-top' ) {
 					hex = '#ff7722';

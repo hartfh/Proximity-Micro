@@ -240,11 +240,11 @@ module.exports = new function() {
 			}
 		}
 
-		// TODO: check if area tiles are inside and set into map-grid data
-
 		Game.TaskManager.createTask('get-profiles', {slotID: Game.State.slotID, tiles: fetchTiles, layer: layer}, function(response) {
-			response.insides.forEach(function(insidePoint) {
-				Game.MapGrid.setPointAsInside(insidePoint);
+			response.insides.forEach(function(tile) {
+				if( tile.inside ) {
+					Game.MapGrid.setPointAsInside(tile);
+				}
 			});
 
 			Game.Spawner.spawn(validAreas, response.profiles, !_ranFastSpawn);

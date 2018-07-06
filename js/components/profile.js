@@ -2,21 +2,24 @@ module.exports = function() {
 	var _self		= {};
 	var _exists	= false;
 
-	_self.player	= null;
 	_self.map		= null;
+	_self.player	= null;
+	_self.state	= null;
 	_self.world	= null;
 
 	function _reset() {
 		_exists = false;
 
-		_self.player	= null;
 		_self.map		= null;
+		_self.player	= null;
+		_self.state	= null;
 		_self.world	= null;
 	};
 
 	function _setProfile(profile) {
 		_self.map		= profile.map;
 		_self.player	= profile.player;
+		_self.state	= profile.state;
 		_self.world	= profile.world;
 
 		_exists = true;
@@ -26,6 +29,7 @@ module.exports = function() {
 		var profile = {
 			map:		_self.map,
 			player:	_self.player,
+			state:	_self.state,
 			world:	_self.world,
 		};
 

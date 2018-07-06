@@ -106,7 +106,18 @@ module.exports = function() {
 		}
 	}
 
+	function _pushGameState() {
+		// Update "surroundings"
+		var mapgridPos = Game.MapGrid.convertPosition(Game.Profile.player.position);
+		Game.State.surroundings = ( Game.MapGrid.isPointInside(mapgridPos) ) ? 'inside' : 'outside';
+
+
+		// TODO: add Game.State data into Game.Profile.state
+	}
+
 	function _pushPlayerProfile() {
+		_pushGameState();
+
 		Game.Player.moveDirection();
 
 		var deltaX = 0;

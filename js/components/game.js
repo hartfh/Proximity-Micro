@@ -65,6 +65,7 @@ var Game = {
 				reset:		{color: '#ffffff', mode: 'source-over', opacity: 0.0},
 			}
 		},
+		debug:			false,
 		fps:				0,
 		map:				{
 			height:	Constants.TERRAIN_TILE_SIZE * Constants.MAP_BLOCK_HEIGHT * Constants.MAP_BLOCK_SIZE,

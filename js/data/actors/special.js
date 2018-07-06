@@ -13,7 +13,7 @@ var textExemplar = {
 	body:		{
 		parts:	{
 			structures:	[
-				{shape: 'rectangle', x: 0, y: 0, width: 10, height: 10, options: {density: 1}, surroundings: 'exempt'}
+				{shape: 'rectangle', x: 0, y: 0, width: 10, height: 10, options: {density: 1}},
 			],
 			sensors:		[],
 			ornaments:	[]
@@ -22,7 +22,8 @@ var textExemplar = {
 		},
 		zindex:	'text',
 		custom:	{
-			ignoresVicinity:	true
+			ignoresVicinity:	true,
+			surroundings:		'exempt',
 		}
 	}
 };
@@ -57,7 +58,6 @@ special['cursor'] = {
 					width:		26,
 					height:		26,
 					shape:		'rectangle',
-					surroundings:	'exempt',
 					//sprite:	'vendorOne'
 				}
 			],
@@ -82,7 +82,8 @@ special['cursor'] = {
 		zindex:	'super-ui-1',
 		custom:	{
 			ignoresVicinity:	true,
-			noActor:			true
+			noActor:			true,
+			surroundings:		'exempt',
 		}
 	}
 };
@@ -102,7 +103,7 @@ special.filler = {
 					y:		0,
 					width:	Constants.TERRAIN_TILE_SIZE,
 					height:	Constants.TERRAIN_TILE_SIZE,
-					shape:	'rectangle'
+					shape:	'rectangle',
 				}
 			],
 			sensors:		[],

@@ -27,6 +27,9 @@ module.exports = function() {
 				},
 				xp:		0,
 			},
+			state:	{
+				surroundings:	'outside',
+			},
 			world:	{
 				//districts:	{}
 			}

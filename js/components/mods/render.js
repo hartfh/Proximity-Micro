@@ -396,7 +396,6 @@ module.exports = function() {
 			context.fillRect(0, 0, canvas.width, canvas.height);
 			context.globalCompositeOperation = 'source-over';
 
-
 			// handle bounds
 			if(options.hasBounds) {
 				var boundsWidth	= render.bounds.max.x - render.bounds.min.x;

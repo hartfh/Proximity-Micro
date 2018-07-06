@@ -200,16 +200,9 @@ module.exports = function(doodads) {
 	_self['test-floor'].body.zindex = sidewalkZIndex;
 	_self['test-sidewalk'].body.zindex = sidewalkZIndex;
 
-	/*
-	_self['e-mover-tile'] = Utilities.clone(moverTile);
-	_self['e-mover-tile'].body.parts.sensors[0].types = ['orienting', 'gravitating-y'];
-	_self['e-mover-tile'].body.parts.sensors[0].sensorOptions = {direction: 'e', strength: 0.7};
-
-
-	_self['e-mover-tile'] = Utilities.clone(moverTile);
-	_self['e-mover-tile'].body.parts.sensors[0].types = ['orienting', 'gravitating-x'];
-	_self['e-mover-tile'].body.parts.sensors[0].sensorOptions = {direction: 'n', strength: 0.5};
-	*/
+	//_self['test-wall-face'].body.custom.surroundings = 'inside';
+	_self['test-wall-top'].body.custom.surroundings = 'inside';
+	_self['test-floor'].body.custom.surroundings = 'inside';
 
 	return _self;
 }(doodads);

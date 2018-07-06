@@ -150,7 +150,8 @@ module.exports = new function() {
 			var y = Math.floor( index / gridDimensions.width );
 
 			if( value == '000o' ) {
-				_grid.setPoint(x, y, 0);
+				//_grid.setPoint(x, y, 0);
+				_grid.setPoint(x, y, {s: '0', m: '0', n: '0', inside: false, id: false});
 			} else {
 				_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
 			}
@@ -576,6 +577,12 @@ module.exports = new function() {
 
 	_self.isPointInside = function(mapCoords) {
 		let point = _grid.getPoint(mapCoords.x, mapCoords.y);
+		/*
+		log(mapCoords)
+		if( !point || !point.inside ) {
+			log(point)
+		}
+		*/
 
 		if( point && point.inside ) {
 			return true;

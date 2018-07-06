@@ -121,4 +121,63 @@ module.exports = {
 
 		mapGrid.setDataPoint(x, y, dataPoint);
 	},
+	getDataPointExemplar: function(x, y) {
+		return {
+			actorData:	{
+				'x':		x,	// area X coordinate
+				'y':		y,	// area Y coordinate
+				't':		[],	// terrain
+				'c':		[],	// characters
+				'd':		[],	// doodads
+				'o':		[],	// obstacles
+			},
+			buildingID:	false,
+			density:		'low',
+			district:		0,
+			inside:		false,
+			solid:		false,
+			subtype:		false,
+			temp:		false,
+			truss:		false,
+			type:		false,
+			zone:		false,
+		};
+	},
+	setupActorData: function(grid) {
+		let self = this;
+
+		// Stores data about actors, terrain and tile coordinates
+		grid.eachDataPoint(function(dataPoint, x, y) {
+			if( !dataPoint ) {
+				dataPoint = self.getDataPointExemplar(x, y);
+			}
+
+			grid.setDataPoint(x, y, dataPoint);
+		});
+
+		return grid;
+	},
+	finalizeActorData: function(grid) {
+		grid.eachDataPoint(function(data, x, y) {
+			// Setup finalized data to be loaded into the saved map grid
+			var finalized = {
+				x:		x,
+				y:		y,
+				t:		data.actorData.t,
+				c:		data.actorData.c,
+				d:		data.actorData.d,
+				o:		data.actorData.o,
+				dist:	data.district,
+				i:		data.inside,
+				type:	data.type,
+				subtype:	data.subtype,
+			};
+
+			grid.setPoint(x, y, finalized);
+			grid.setDataPoint(x, y, null);
+			grid.setMetaPoint(x, y, null);
+		});
+
+		return grid;
+	},
 };
