@@ -99,7 +99,7 @@ module.exports = new function() {
 
 	_self.start = function(saveData) {
 		if( saveData ) {
-			_unserializeGrid2(saveData);
+			_unserializeGrid(saveData);
 		}
 
 		_enableProfileUpdating();
@@ -118,6 +118,7 @@ module.exports = new function() {
 		return CONTENT_KEY[code].name;
 	}
 
+	/*
 	function _serializeGrid() {
 		var serialized = [];
 
@@ -140,6 +141,7 @@ module.exports = new function() {
 
 		return serialized.join(',');
 	}
+	*/
 
 	function _serializeGrid2() {
 		let currCoords = _self.convertPosition(Game.Profile.player.position);
@@ -205,34 +207,9 @@ module.exports = new function() {
 			var y = Math.floor( index / gridDimensions.width );
 
 			if( value == '000o' ) {
-				//_grid.setPoint(x, y, 0);
 				_grid.setPoint(x, y, {s: '0', m: '0', n: '0', inside: false, id: false});
 			} else {
 				_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
-			}
-		}
-	}
-
-	function _unserializeGrid2(serialized) {
-		serialized = serialized.replace('X', '0');
-		serialized = serialized.split(',');
-
-		for(let y = 0; y < SAVE_AREAS_Y; y++) {
-			for(let x = 0; x < SAVE_AREAS_X; x++) {
-				let index		= (y * SAVE_AREA_SIZE * SAVE_AREAS_Y) + (x * SAVE_AREA_SIZE);
-				let mapString	= serialized.slice(index, SAVE_AREA_SIZE * SAVE_AREA_SIZE);
-
-				for(var strIndex in mapString) {
-					var value = mapString[strIndex];
-					var gridX = (x * SAVE_AREA_SIZE) + strIndex % SAVE_AREA_SIZE;
-					var gridY = (y * SAVE_AREA_SIZE) + Math.floor( strIndex / SAVE_AREA_SIZE );
-
-					if( value == '000o' ) {
-						_grid.setPoint(gridX, gridY, {s: '0', m: '0', n: '0', inside: false, id: false});
-					} else {
-						_grid.setPoint(gridX, gridY, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
-					}
-				}
 			}
 		}
 	}
