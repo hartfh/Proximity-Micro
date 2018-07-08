@@ -80,6 +80,11 @@ module.exports = new function() {
 	var _grid			= new Grid(Constants.MAP_BLOCK_WIDTH * Constants.MAP_BLOCK_SIZE, Constants.MAP_BLOCK_HEIGHT * Constants.MAP_BLOCK_SIZE, {data: false});
 	var _vportCenter	= {x: false, y: false};
 
+	const SAVE_AREA_SIZE = 100;
+	const SAVE_AREAS_X = Math.ceil(Constants.MAP_BLOCK_WIDTH * Constants.MAP_BLOCK_SIZE / SAVE_AREA_SIZE);
+	const SAVE_AREAS_Y = Math.ceil(Constants.MAP_BLOCK_HEIGHT * Constants.MAP_BLOCK_SIZE / SAVE_AREA_SIZE);
+	let serializable = {};
+
 	// Create two-way content key
 	for(let data of CONTENT_TYPES) {
 		CONTENT_KEY[data.code] = data;
@@ -94,7 +99,7 @@ module.exports = new function() {
 
 	_self.start = function(saveData) {
 		if( saveData ) {
-			_unserializeGrid(saveData);
+			_unserializeGrid2(saveData);
 		}
 
 		_enableProfileUpdating();
@@ -116,7 +121,6 @@ module.exports = new function() {
 	function _serializeGrid() {
 		var serialized = [];
 
-		// Represent each point by two characters, one for "solid" objects and the other for "non-solid" objects
 		_grid.eachPoint(function(content, x, y) {
 			if( content ) {
 				var value = '';
@@ -135,6 +139,57 @@ module.exports = new function() {
 		});
 
 		return serialized.join(',');
+	}
+
+	function _serializeGrid2() {
+		let currCoords = _self.convertPosition(Game.Profile.player.position);
+		let currSaveCoords = {
+			x:	Math.floor(currCoords.x / SAVE_AREA_SIZE),
+			y:	Math.floor(currCoords.y / SAVE_AREA_SIZE),
+		};
+
+		let serialized = '';
+
+		for(let y = 0; y < SAVE_AREAS_Y; y++) {
+			for(let x = 0; x < SAVE_AREAS_X; x++) {
+				let key = `${x}-${y}`;
+
+				if( !serializable[key] || (x == currSaveCoords.x && y == currSaveCoords.y) ) {
+					let minBound = {
+						x:	x * SAVE_AREA_SIZE,
+						y:	y * SAVE_AREA_SIZE,
+					};
+					let maxBound = {
+						x:	(x + 1) * SAVE_AREA_SIZE - 1,
+						y:	(y + 1) * SAVE_AREA_SIZE - 1,
+					};
+					var mapString = [];
+
+					_grid.eachPointWithin(minBound, maxBound, function(content, x, y) {
+						if( content ) {
+							var value = '';
+
+							value += content.s || '0';
+							value += content.m || '0';
+							value += content.n || '0';
+							value += (content.inside) ? 'i' : 'o';
+
+							value = value.replace('X', '0'); // remove any temporary values
+
+							mapString.push(value);
+						} else {
+							mapString.push('000o');
+						}
+					});
+
+					serializable[key] = mapString.join(',');
+				}
+
+				serialized += serializable[key];
+			}
+		}
+
+		return serialized;
 	}
 
 	function _unserializeGrid(serialized) {
@@ -158,8 +213,32 @@ module.exports = new function() {
 		}
 	}
 
+	function _unserializeGrid2(serialized) {
+		serialized = serialized.replace('X', '0');
+		serialized = serialized.split(',');
+
+		for(let y = 0; y < SAVE_AREAS_Y; y++) {
+			for(let x = 0; x < SAVE_AREAS_X; x++) {
+				let index		= (y * SAVE_AREA_SIZE * SAVE_AREAS_Y) + (x * SAVE_AREA_SIZE);
+				let mapString	= serialized.slice(index, SAVE_AREA_SIZE * SAVE_AREA_SIZE);
+
+				for(var strIndex in mapString) {
+					var value = mapString[strIndex];
+					var gridX = (x * SAVE_AREA_SIZE) + strIndex % SAVE_AREA_SIZE;
+					var gridY = (y * SAVE_AREA_SIZE) + Math.floor( strIndex / SAVE_AREA_SIZE );
+
+					if( value == '000o' ) {
+						_grid.setPoint(gridX, gridY, {s: '0', m: '0', n: '0', inside: false, id: false});
+					} else {
+						_grid.setPoint(gridX, gridY, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
+					}
+				}
+			}
+		}
+	}
+
 	function _pushMapGridProfile() {
-		Game.Profile.map = _serializeGrid();
+		Game.Profile.map = _serializeGrid2();
 	}
 
 	/**
@@ -399,7 +478,7 @@ module.exports = new function() {
 		let contentCode	= _getCodeFromType(contentType);
 
 		if( !point ) {
-			point = {s: false, m: false, n: false, id: false};
+			point = {s: false, m: false, n: false, inside: false, id: false};
 		}
 
 		point[slot] = contentCode;
@@ -431,7 +510,7 @@ module.exports = new function() {
 		var point = _grid.getPoint(body.mapgrid.x, body.mapgrid.y);
 
 		if( point.n || point.m ) {
-			_grid.setPoint(body.mapgrid.x, body.mapgrid.y, {s: false, m: point.m, n: point.n, id: false});
+			_grid.setPoint(body.mapgrid.x, body.mapgrid.y, {s: false, m: point.m, n: point.n, inside: point.inside, id: false});
 		} else {
 			_grid.setPoint(body.mapgrid.x, body.mapgrid.y, 0);
 		}
@@ -464,7 +543,7 @@ module.exports = new function() {
 	 */
 	_self.fillPoint = function(x, y) {
 		if( !_grid.getPoint(x, y) ) {
-			_grid.setPoint(x, y, {s: 'X', m: false, n: false, id: false});
+			_grid.setPoint(x, y, {s: 'X', m: false, n: false, inside: false, id: false});
 		}
 	};
 
@@ -515,7 +594,7 @@ module.exports = new function() {
 	_self.getVisibleDimensions = function() {
 		return {
 			width:	VPORT_BUFFER_X * 2,
-			height:	VPORT_BUFFER_Y * 2
+			height:	VPORT_BUFFER_Y * 2,
 		}
 	};
 
@@ -577,12 +656,6 @@ module.exports = new function() {
 
 	_self.isPointInside = function(mapCoords) {
 		let point = _grid.getPoint(mapCoords.x, mapCoords.y);
-		/*
-		log(mapCoords)
-		if( !point || !point.inside ) {
-			log(point)
-		}
-		*/
 
 		if( point && point.inside ) {
 			return true;
@@ -607,11 +680,11 @@ module.exports = new function() {
 		var bounds = {
 			min:	{
 				x:	gridStart.x - PATHFIND_BUFFER_X,
-				y:	gridStart.y - PATHFIND_BUFFER_Y
+				y:	gridStart.y - PATHFIND_BUFFER_Y,
 			},
 			max:	{
 				x:	gridStart.x + PATHFIND_BUFFER_X,
-				y:	gridStart.y + PATHFIND_BUFFER_Y
+				y:	gridStart.y + PATHFIND_BUFFER_Y,
 			}
 		};
 
@@ -656,7 +729,7 @@ module.exports = new function() {
 			}
 
 			var testCoords	= segment[i];
-			var point		= _grid.getPoint(testCoords.x, testCoords.y);
+			var point = _grid.getPoint(testCoords.x, testCoords.y);
 
 			if( point && point.s ) {
 				return false;
