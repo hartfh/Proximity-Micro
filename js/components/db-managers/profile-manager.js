@@ -10,7 +10,8 @@ module.exports = function() {
 		_db	= null;
 
 		_profile = {
-			map:		new Grid(Constants.MAP_BLOCK_WIDTH * Constants.MAP_BLOCK_SIZE, Constants.MAP_BLOCK_HEIGHT * Constants.MAP_BLOCK_SIZE).serialize(),
+			//map:		new Grid(Constants.MAP_BLOCK_WIDTH * Constants.MAP_BLOCK_SIZE, Constants.MAP_BLOCK_HEIGHT * Constants.MAP_BLOCK_SIZE).serialize(),
+			map:		false,
 			player:	{
 				position:	{
 					x:	936,

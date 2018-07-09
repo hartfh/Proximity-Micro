@@ -47,7 +47,6 @@ module.exports = function(bldgList, mapGrid) {
 
 						if( metaPoint.type != 'inside' ) {
 							self.setPoint(x, y, 0);
-
 							mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'inside', false);
 						}
 					}
@@ -109,6 +108,7 @@ module.exports = function(bldgList, mapGrid) {
 
 					if( dataPoint.remove ) {
 						self.setPoint(x, y, 0);
+						mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'inside', false);
 					}
 				}
 			});
@@ -119,6 +119,7 @@ module.exports = function(bldgList, mapGrid) {
 
 					if( metaPoint.type == 'pipe' || metaPoint.type == 'end' || metaPoint.type == 'island' ) {
 						self.setPoint(x, y, 0);
+						mapAccess.insertDataPointValue(mapGrid, x + data.min.x, y + data.min.y, 'inside', false);
 					}
 				}
 			});

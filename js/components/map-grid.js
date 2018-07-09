@@ -99,7 +99,7 @@ module.exports = new function() {
 
 	_self.start = function(saveData) {
 		if( saveData ) {
-			_unserializeGrid(saveData);
+			_unserializeGrid2(saveData);
 		}
 
 		_enableProfileUpdating();
@@ -184,7 +184,7 @@ module.exports = new function() {
 						}
 					});
 
-					serializable[key] = mapString.join(',');
+					serializable[key] = (mapString.join(',') + ',');
 				}
 
 				serialized += serializable[key];
@@ -210,6 +210,37 @@ module.exports = new function() {
 				_grid.setPoint(x, y, {s: '0', m: '0', n: '0', inside: false, id: false});
 			} else {
 				_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
+			}
+		}
+	}
+
+	function _unserializeGrid2(serialized) {
+		const TILE_LENGTH = 4;
+
+		var gridDimensions = _grid.getDimensions();
+
+		serialized = serialized.replace('X', '0');
+		//serialized = serialized.replace(',', '');
+
+		for(let y = 0; y < SAVE_AREAS_Y; y++) {
+			for(let x = 0; x < SAVE_AREAS_X; x++) {
+				let areaLength = SAVE_AREA_SIZE * SAVE_AREA_SIZE * (TILE_LENGTH + 1) * (TILE_LENGTH + 1);
+				let index = (y * areaLength * SAVE_AREAS_X) + (x * areaLength);
+				let mapString = serialized.slice(index, areaLength);
+
+				serializable[`${x}-${y}`] = mapString;
+
+				for(let i = 0; i < areaLength; i += (TILE_LENGTH + 1)) {
+					let value = mapString.slice(i, TILE_LENGTH + 1);
+					//log('-');
+					//log(value);
+
+					if( value == '000o' ) {
+						_grid.setPoint(x, y, {s: '0', m: '0', n: '0', inside: false, id: false});
+					} else {
+						_grid.setPoint(x, y, {s: value[0], m: value[1], n: value[2], inside: (value[3] == 'i'), id: false});
+					}
+				}
 			}
 		}
 	}

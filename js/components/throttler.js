@@ -1,6 +1,6 @@
 module.exports = new function() {
-	const _TIME_DELAY	= 50;
-	const _BATCH_SIZE	= 12;
+	const _TIME_DELAY	= 40; // 50
+	const _BATCH_SIZE	= 22; // 12
 
 	var _self = this;
 
