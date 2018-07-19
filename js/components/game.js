@@ -123,6 +123,7 @@ Game.start = function() {
 	this.Settings.load(loadingTracker.check);
 	this.Audio.init(loadingTracker.check);
 	this.ImageConverter.decode(loadingTracker.check);
+	// load textures
 
 	/*
 	this.Cursor.load(function() {

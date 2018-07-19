@@ -25,6 +25,7 @@ var Sounds		= require('./sounds');
 var Sheets		= require('./image-sheets');
 var Special		= require('./actors/special');
 var Terrain		= require('./actors/terrain');
+var Textures		= require('./textures');
 var Troupes		= require('./troupes');
 var WeaponActors	= require('./actors/weapons');
 var Weapons		= require('./weapons');
@@ -51,6 +52,7 @@ var data = {
 	effects:			Effects,
 	fonts:			Fonts,
 	images:			Images,
+	imagesTemp:		ImagesTemp,
 	layers:			Layers,
 	levels:			Levels,
 	menus:			Menus,
@@ -63,6 +65,7 @@ var data = {
 	sheets:			Sheets,
 	sounds:			Sounds,
 	sprites:			Sprites,
+	textures:			Textures,
 	troupes:			Troupes,
 	weapons:			Weapons,
 	zindices:			ZIndices

@@ -1,9 +1,10 @@
 var Matter		= require('matter-js');
 var electron		= require('electron');
 var ipc			= electron.ipcRenderer;
-var fs			= require('fs');
-var Datastore		= require('nedb');
-var MaxRectsPacker	= require('maxrects-packer');
+const fs				= require('fs');
+const Datastore		= require('nedb');
+const MaxRectsPacker	= require('maxrects-packer');
+const THREE			= require('three');
 
 // NOTE: Temp, but don't move
 var log = function(data) {
@@ -62,37 +63,3 @@ setTimeout(function() {
 
 //Game.ImageConverter.encode();
 Game.start();
-
-
-/*
-if( !fs.existsSync('error_log.txt') ) {
-	fs.createWriteStream('error_log.txt');
-}
-
-var error_log = fs.openSync('error_log.txt', 'w');
-
-fs.writeSync(error_log, err);
-
-fs.closeSync(error_log);
-*/
-
-
-/*
-var packer = new MaxRectsPacker(1024, 1024, 2); // 1024x2048
-
-var contents = [];
-
-for(var i = 0; i < 4; i++) {
-	var shape = {width: 8, height: 8, data: 'shape-' + i};
-
-	contents.push(shape);
-}
-
-packer.addArray(contents);
-
-console.log(packer.bins)
-
-packer.bins.forEach(bin => {
-	log(bin.rects);
-});
-*/
